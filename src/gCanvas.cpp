@@ -14,17 +14,32 @@ gCanvas::gCanvas(gApp* root) : gBaseCanvas(root) {
 }
 
 gCanvas::~gCanvas() {
+	for (Ship *ship : ships)
+		delete ship;
 }
 
 void gCanvas::setup() {
-	logo.loadImage("glistengine_logo.png");
+	ships.resize(4);
+	ships[0] = new Ship(1, 25, "gemiler/ship_1/", {55, 20});
+	ships[1] = new Ship(2, 16, "gemiler/ship_2/", {90, 310});
+	ships[2] = new Ship(3, 25, "gemiler/ship_3/", {50, 550});
+	ships[3] = new Ship(5, 21, "gemiler/", {90, 850});
+	ships[0]->setIdleFps(8);
+	ships[1]->setIdleFps(9);
+	ships[2]->setIdleFps(8);
+	ships[3]->setIdleFps(10);
+	background.loadImage("map.png");
 }
 
 void gCanvas::update() {
+	for (Ship *ship: ships)
+		ship->update();
 }
 
 void gCanvas::draw() {
-	logo.draw((getWidth() - logo.getWidth()) / 2, (getHeight() - logo.getHeight()) / 2);
+	background.draw(0, 0);
+	for (Ship *ship : ships)
+		ship->draw();
 }
 
 void gCanvas::keyPressed(int key) {

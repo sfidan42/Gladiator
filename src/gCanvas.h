@@ -11,6 +11,8 @@
 #include "gBaseCanvas.h"
 #include "gApp.h"
 #include "gImage.h"
+#include "Ship.h"
+#include <vector>
 
 
 class gCanvas : public gBaseCanvas {
@@ -39,7 +41,8 @@ public:
 
 private:
 	gApp* root;
-	gImage logo;
+	gImage background;
+	std::vector<Ship*> ships;
 };
 
 #endif /* GCANVAS_H_ */
