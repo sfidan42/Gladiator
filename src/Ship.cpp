@@ -1,23 +1,41 @@
 #include "Ship.h"
-#include <sstream>
 
-Ship::Ship(int shipIdx, int lastFrameIdx, std::string framesDir, glm::vec<2, int> pos) {
-	this->pos = pos;
+Ship::Ship(glm::vec2 targetPos, glm::vec2 sourceSize, float targetSizeScale) {
+	this->pos = targetPos;
+	this->size = sourceSize * targetSizeScale;
 	this->idleAnim = new gSpriteAnimation();
-	this->idleAnim->setFps(10);
-	this->idleAnim->setLoop(true);
-	for (int i = 1; i <= lastFrameIdx; i++) {
-		std::stringstream framePath;
-		framePath << framesDir << "ship_" << shipIdx << "_" << i << ".png";
-		this->idleAnim->loadFrame(framePath.str());
-	}
 	this->animator = new gSpriteAnimator();
+}
+
+static std::string formatted(const std::string& format, int num) {
+    int size = std::snprintf(nullptr, 0, format.c_str(), num);
+    if(size <= 0) {
+    	return "";
+    }
+    std::vector<char> buffer(size + 1);
+    std::snprintf(buffer.data(), buffer.size(), format.c_str(), num);
+    return std::string(buffer.data());
+}
+
+void Ship::setupAnim(const std::string &pathFmt, int fps, bool isLooped) {
+	this->idleAnim->setFps(fps);
+	this->idleAnim->setLoop(isLooped);
+	const std::string &baseDir = gObject::gGetImagesDir();
+	for(int i = 1; ;i++) {
+		std::string path = formatted(pathFmt, i);
+		if(gFile::doesFileExist(baseDir + path)) {
+			this->idleAnim->loadFrame(path);
+		} else {
+			break;
+		}
+	}
 	this->animator->addAnimation(0, idleAnim);
 	this->animator->changeAnimation(0);
 }
 
 Ship::~Ship(void) {
 	delete this->animator;
+	delete this->idleAnim;
 }
 
 void Ship::update() {
@@ -25,9 +43,13 @@ void Ship::update() {
 }
 
 void Ship::draw(void) {
-	this->animator->draw(pos.x, pos.y);
+	this->animator->draw(pos.x, pos.y, size.x, size.y);
 }
 
-void Ship::setIdleFps(int fps) {
-	this->idleAnim->setFps(fps);
+void Ship::setPosition(glm::vec2 pos) {
+	this->pos = pos - this->size * 0.5f;
+}
+
+glm::vec2 Ship::getPosition(void) {
+	return (this->pos + this->size * 0.5f);
 }
