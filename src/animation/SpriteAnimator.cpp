@@ -1,0 +1,79 @@
+/*
+ * SpriteAnimator.cpp
+ *
+ *  Created on: Jul 3, 2025
+ *      Author: sadettin
+ */
+
+#include "animation/SpriteAnimator.h"
+
+SpriteAnimator::SpriteAnimator() {
+	currentanim = nullptr;
+}
+
+SpriteAnimator::~SpriteAnimator() {
+	for(SpriteAnimation* anim : animations) {
+		delete anim;
+	}
+}
+
+void SpriteAnimator::addAnimation(SpriteAnimation *anim) {
+	if(!anim) {
+		return;
+	}
+	animations.push_back(anim);
+	if(!currentanim) {
+		currentanim = anim;
+	}
+}
+
+void SpriteAnimator::changeAnimation(int id) {
+	for(SpriteAnimation* anim : animations) {
+		if(anim->getId() == id) {
+			currentanim = anim;
+			return;
+		}
+	}
+	gLoge("SpriteAnimator::changeAnimation") << id << " not found";
+}
+
+void SpriteAnimator::changeCurrentFps(int fps) {
+	if (!currentanim) {
+		return;
+	}
+	int id = currentanim->getId();
+	for (SpriteAnimation* anim : animations) {
+		if (anim->getId() == id) {
+			anim->setFps(fps);
+			return;
+		}
+	}
+	gLoge("SpriteAnimator::changeCurrentFps") << id << " not found";
+}
+
+void SpriteAnimator::update(float deltaTime) {
+	if(!currentanim) {
+		return;
+	}
+	currentanim->update(deltaTime);
+}
+
+void SpriteAnimator::draw(int x, int y) {
+	if(!currentanim) {
+		return;
+	}
+	gImage* currentframe = currentanim->getCurrentFrame();
+	if(currentframe) {
+		currentframe->draw(x, y);
+	}
+}
+
+void SpriteAnimator::draw(int x, int y, int w, int h) {
+	if(!currentanim) {
+		return;
+	}
+	gImage* currentframe = currentanim->getCurrentFrame();
+	if(currentframe) {
+		currentframe->draw(x, y, w, h);
+	}
+}

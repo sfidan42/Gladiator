@@ -10,13 +10,12 @@
 
 #include "gBaseCanvas.h"
 #include "gApp.h"
-#include "gImage.h"
-#include "Ship.h"
-#include "MouseObject.h"
+#include <gImage.h>
 #include <vector>
 #include <GLFW/glfw3.h>
 #include <gFile.h>
 #include <string>
+#include "controllers/ShipController.h"
 
 class gCanvas : public gBaseCanvas {
 public:
@@ -45,8 +44,7 @@ public:
 private:
 	gApp* root;
 	gImage background;
-	std::vector<Ship*> ships;
-	MouseObject mouseObj;
+	ShipController *shipcontroller;
 };
 
 #endif /* GCANVAS_H_ */
