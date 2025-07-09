@@ -38,7 +38,16 @@ void Ship::setFrame(const std::string &pathFmt) {
 }
 
 void Ship::draw(void) {
-	frame->draw(pos.x, pos.y, size.x, size.y);
+	static int i;
+	static glm::vec2 rnd;
+
+	if (i == 0) {
+		rnd = glm::gaussRand(glm::vec2(0.0f, 0.0f), glm::vec2(3.0f, 3.0f));
+	}
+
+	i = (i + 1) % 200;
+
+	frame->draw(pos.x + rnd.x, pos.y + rnd.y, size.x, size.y);
 }
 
 std::string Ship::getFramePathFmt(void) const {

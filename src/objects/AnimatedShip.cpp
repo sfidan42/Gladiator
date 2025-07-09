@@ -49,17 +49,17 @@ void AnimatedShip::update(float deltaTime) {
 }
 
 void AnimatedShip::draw(void) {
-	this->animator->draw(pos.x, pos.y, size.x, size.y);
+	this->animator->draw(pos, size);
 }
 
-void AnimatedShip::move(glm::vec2 stepSize) {
-	this->pos += stepSize;
+void AnimatedShip::move(const glm::vec2& stepSize, const glm::vec2& minBoundary, const glm::vec2& maxBoundary) {
+	pos = glm::clamp(pos + stepSize, minBoundary - size * 0.5f, maxBoundary - size * 0.5f);
 }
 
 glm::vec2 AnimatedShip::getSize(void) const {
-	return (this->size);
+	return (size);
 }
 
 glm::vec2 AnimatedShip::getPosition(void) const {
-	return (this->pos + this->size * 0.5f);
+	return (pos + size * 0.5f);
 }

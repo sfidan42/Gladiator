@@ -107,18 +107,16 @@ set(GlistApp_SOURCES
 		${APP_DIR}/src/main.cpp
 		${APP_DIR}/src/gApp.cpp
 		${APP_DIR}/src/gCanvas.cpp
-		${APP_DIR}/src/Ship.cpp
-)
-
-set(GlistApp_HEADERS
-		${APP_DIR}/src/gApp.h
-		${APP_DIR}/src/gCanvas.h
-		${APP_DIR}/src/Ship.h
+		${APP_DIR}/src/animation/SpriteAnimator.cpp
+		${APP_DIR}/src/animation/SpriteAnimation.cpp
+		${APP_DIR}/src/objects/AShipBase.cpp
+		${APP_DIR}/src/objects/Ship.cpp
+		${APP_DIR}/src/objects/AnimatedShip.cpp
+		${APP_DIR}/src/controllers/ShipController.cpp
 )
 
 add_executable(${APP_NAME}
 		${GlistApp_SOURCES}
-		${GlistApp_HEADERS}
 )
 
 ######### APPLE AND IOS SPECIFIC SETTINGS #########

@@ -26,7 +26,7 @@ public:
 	void changeCurrentFps(int fps);
 	void update(float deltaTime);
 	void draw(void);
-	void move(glm::vec2 stepSize);
+	void move(const glm::vec2& stepSize, const glm::vec2& minBoundary, const glm::vec2& maxBoundary);
 	glm::vec2 getSize(void) const;
 	glm::vec2 getPosition(void) const;
 private:

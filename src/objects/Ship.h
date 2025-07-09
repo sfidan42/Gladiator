@@ -8,6 +8,7 @@
 #ifndef SRC_OBJECTS_SHIP_H_
 #define SRC_OBJECTS_SHIP_H_
 #include <glm/glm.hpp>
+#include <glm/gtc/random.hpp>
 #include <string>
 #include "gImage.h"
 #include "gFile.h"

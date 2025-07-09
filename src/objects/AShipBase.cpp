@@ -6,15 +6,34 @@
  */
 
 #include "objects/AnimatedShip.h"
-#include "objects/AShipBase.h"
 
 AShipBase::AShipBase(const std::string& pathFmt) {
 	this->framepathfmt = pathFmt;
 }
 
-bool AShipBase::isAnimated(void) {
+AnimatedShip* AShipBase::isAnimated(void) {
 	return (dynamic_cast<AnimatedShip*>(this));
 }
 
 AShipBase::~AShipBase() {
+}
+
+bool AShipBase::collision(float& outMarginLen, const glm::vec2 &clickPos) {
+	outMarginLen = glm::length(clickPos - getPosition());
+	return (outMarginLen <= glm::length(getSize() * 0.5f));
+}
+
+ShipIterType shipSelect(ShipListType& ships, const glm::vec2 pos) {
+	ShipIterType selectedShipIter = ships.end();
+	float marginLen;
+	float smallestMarginLen = FLT_MAX;
+	for (ShipIterType shipIter = ships.begin(); shipIter != ships.end(); shipIter++) {
+		if ((*shipIter)->collision(marginLen, pos)) {
+			if (marginLen <= smallestMarginLen) {
+				smallestMarginLen = marginLen;
+				selectedShipIter = shipIter;
+			}
+		}
+	}
+	return selectedShipIter;
 }

@@ -77,3 +77,11 @@ void SpriteAnimator::draw(int x, int y, int w, int h) {
 		currentframe->draw(x, y, w, h);
 	}
 }
+
+void SpriteAnimator::draw(const glm::vec2& pos) {
+	this->draw(pos.x, pos.y);
+}
+
+void SpriteAnimator::draw(const glm::vec2& pos, const glm::vec2& size) {
+	this->draw(pos.x, pos.y, size.x, size.y);
+}

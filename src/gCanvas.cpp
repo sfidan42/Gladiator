@@ -19,8 +19,7 @@ gCanvas::~gCanvas() {
 
 void gCanvas::setup() {
 	background.loadImage("map.png");
-	shipcontroller->setup();
-//	shipcontroller->changesSpeedMul(10.0f);
+	shipcontroller->setup(1000.0f, glm::vec2(0.0f), glm::vec2(1920, 1080));
 }
 
 void gCanvas::update() {
@@ -34,11 +33,21 @@ void gCanvas::draw() {
 }
 
 void gCanvas::keyPressed(int key) {
-	shipcontroller->WASDPressed(key);
+	switch (key) {
+		case GLFW_KEY_W: shipcontroller->WPressed(); break;
+		case GLFW_KEY_A: shipcontroller->APressed(); break;
+		case GLFW_KEY_S: shipcontroller->SPressed(); break;
+		case GLFW_KEY_D: shipcontroller->DPressed(); break;
+	}
 }
 
 void gCanvas::keyReleased(int key) {
-	shipcontroller->WASDReleased(key);
+	switch (key) {
+		case GLFW_KEY_W: shipcontroller->WReleased(); break;
+		case GLFW_KEY_A: shipcontroller->AReleased(); break;
+		case GLFW_KEY_S: shipcontroller->SReleased(); break;
+		case GLFW_KEY_D: shipcontroller->DReleased(); break;
+	}
 }
 
 void gCanvas::charPressed(unsigned int codepoint) {
@@ -56,10 +65,11 @@ void gCanvas::mouseDragged(int x, int y, int button) {
 void gCanvas::mousePressed(int x, int y, int button) {
 	switch (button) {
 		case GLFW_MOUSE_BUTTON_LEFT:
-			shipcontroller->mouseLeftClick(glm::vec2(x, y), 100.0f);
+			shipcontroller->mouseLeftClick(glm::vec2(x, y));
 			break;
 		case GLFW_MOUSE_BUTTON_RIGHT:
-			shipcontroller->mouseRightClick(glm::vec2(x, y), 100.0f);
+			shipcontroller->mouseRightClick(glm::vec2(x, y));
+			break;
 		default:
 			break;
 	}
