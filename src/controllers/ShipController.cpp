@@ -8,8 +8,8 @@
 #include "controllers/ShipController.h"
 
 ShipController::ShipController()
-	: speed(0.0f, 0.0f), selectedship(nullptr), speedmul(1000.0f), minboundary(0.0f, 0.0f),
-	  maxboundary(FLT_MAX, FLT_MAX) {
+	: speed(0.0f, 0.0f), selectedship(nullptr), speedmul(1000.0f),
+	  minboundary(0.0f, 0.0f), maxboundary(200.0f, 150.0f) {
 	for(int i = 1; i <= 4; ++i) {
 		AnimatedFrames animatedFrames;
 		for(int j = 1; ; ++j) {
@@ -98,23 +98,30 @@ void ShipController::setup(const float speedMul, const glm::vec2& minBoundary, c
 
 void ShipController::update(float deltaTime) {
 	for(AShipBase* ship : ships) {
-		AnimatedShip* animship = ship->isAnimated();
-		if(animship) {
-			animship->update(deltaTime);
+		AnimatedShip* animShip = ship->isAnimated();
+		if(animShip) {
+			animShip->update(deltaTime);
 		}
 	}
 	animator->update(deltaTime);
 	if(selectedship) {
-		AnimatedShip* animship = selectedship->isAnimated();
-		if(animship) {
-			animship->move(speed * speedmul * deltaTime, minboundary, maxboundary);
+		AnimatedShip* animShip = selectedship->isAnimated();
+		if(animShip) {
+			animShip->move(speed * speedmul * deltaTime, this->minboundary, this->maxboundary);
 		}
 	}
 }
 
 void ShipController::draw() {
 	if(selectedship) {
-		animator->draw(selectedship->getPosition(), selectedship->getSize(), 30.0f);
+		const gImage* curFrame = animator->getCurrentFrame();
+		glm::vec2 curPos = selectedship->getMidPosition();
+		glm::vec2 curFrameSize {
+			static_cast<float>(curFrame->getWidth()),
+			static_cast<float>(curFrame->getHeight())
+		};
+		curPos -= curFrameSize * 0.5f;
+		animator->draw(curPos, curFrameSize, 30.0f);
 	}
 	for(AShipBase* ship : ships) {
 		ship->draw();

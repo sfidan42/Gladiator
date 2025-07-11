@@ -24,6 +24,7 @@ public:
 	void draw(int x, int y, int w, int h, float angle = 1.0f);
 	void draw(const glm::vec2& pos);
 	void draw(const glm::vec2& pos, const glm::vec2& size, float angle = 0.0f);
+	const gImage* getCurrentFrame() const;
 private:
 	std::vector<SpriteAnimation*> animations;
 	SpriteAnimation* currentanim;

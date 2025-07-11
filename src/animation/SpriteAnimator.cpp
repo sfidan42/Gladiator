@@ -75,3 +75,7 @@ void SpriteAnimator::draw(const glm::vec2& pos) {
 void SpriteAnimator::draw(const glm::vec2& pos, const glm::vec2& size, float angle) {
 	this->draw(pos.x, pos.y, size.x, size.y, angle);
 }
+
+const gImage* SpriteAnimator::getCurrentFrame() const {
+	return currentanim->getCurrentFrame();
+}

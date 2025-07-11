@@ -40,8 +40,8 @@ private:
 	AShipBase* selectedship;
 	std::array<AnimatedFrames, 4> listofanimatedframes;
 	std::vector<AShipBase*> ships;
-	glm::vec2 minboundary { 0.0f, 0.0f };
-	glm::vec2 maxboundary { FLT_MAX, FLT_MAX };
+	glm::vec2 minboundary;
+	glm::vec2 maxboundary;
 	SpriteAnimator *animator;
 };
 
