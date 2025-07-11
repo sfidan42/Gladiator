@@ -7,18 +7,33 @@
 
 #include "controllers/ShipController.h"
 
-ShipController::ShipController(void) {
-	selectedship = nullptr;
-	ships.resize(4);
-	ships[0] = new Ship("gemiler/ship_1/ship_1_%d.png", {60,  20}, {242, 239}, 0.95f);
-	ships[1] = new Ship("gemiler/ship_2/ship_2_%d.png", {90, 310}, {170, 193}, 1.05f);
-	ships[2] = new Ship("gemiler/ship_3/ship_3_%d.png", {70, 560}, {255, 250}, 0.85f);
-	ships[3] = new Ship("gemiler/ship_4/ship_4_%d.png", {90, 870}, {130,  97}, 1.30f);
+ShipController::ShipController()
+	: speed(0.0f, 0.0f), selectedship(nullptr), speedmul(1000.0f), minboundary(0.0f, 0.0f),
+	  maxboundary(FLT_MAX, FLT_MAX) {
+	for(int i = 1; i <= 4; ++i) {
+		AnimatedFrames animatedFrames;
+		for(int j = 1; ; ++j) {
+			std::string path = "gemiler/ship_" + gToStr(i) + "/ship_" + gToStr(i) + "_" + gToStr(j) + ".png";
+			if(!gFile::doesFileExist(gObject::gGetImagesDir() + path)) {
+				gLogw("ShipController::ShipController") << "No more frames found for: " << path;
+				break;
+			}
+			auto* img = new gImage();
+			img->loadImage(path);
+			animatedFrames.frames.push_back(img);
+		}
+		listofanimatedframes[i - 1] = std::move(animatedFrames);
+	}
+	ships.reserve(4);
+	ships.push_back(new Ship(&listofanimatedframes[0], {60, 20}, {242, 239}));
+	ships.push_back(new Ship(&listofanimatedframes[1], {90, 310}, {170, 193}));
+	ships.push_back(new Ship(&listofanimatedframes[2], {47, 557}, {255, 250}));
+	ships.push_back(new Ship(&listofanimatedframes[3], {110, 900}, {130, 97}));
 	animator = new SpriteAnimator();
 }
 
 ShipController::~ShipController() {
-	for(AShipBase *ship : ships) {
+	for(AShipBase* ship : ships) {
 		delete ship;
 	}
 	delete animator;
@@ -26,17 +41,17 @@ ShipController::~ShipController() {
 
 void ShipController::mouseLeftClick(const glm::vec2& clickedPos) {
 	selectedship = nullptr;
-	ShipIterType selectedShipIter = shipSelect(ships, clickedPos);
-	if (selectedShipIter == ships.end()) {
+	auto selectedShipIter = shipSelect(ships, clickedPos);
+	if(selectedShipIter == ships.end()) {
 		return;
 	}
 	AShipBase* newSelectedShip = *selectedShipIter;
-	if (newSelectedShip->isAnimated()) {
+	if(newSelectedShip->isAnimated()) {
 		selectedship = newSelectedShip;
 		return;
 	}
-	const Ship* ship = dynamic_cast<const Ship*>(newSelectedShip);
-	AnimatedShip* animship = new AnimatedShip(ship);
+	Ship* ship = dynamic_cast<Ship*>(newSelectedShip);
+	auto* animship = new AnimatedShip(*ship);
 	animship->changeCurrentFps(12);
 	newSelectedShip = dynamic_cast<AShipBase*>(animship);
 	ships.push_back(newSelectedShip);
@@ -44,15 +59,15 @@ void ShipController::mouseLeftClick(const glm::vec2& clickedPos) {
 }
 
 void ShipController::mouseRightClick(const glm::vec2& clickedPos) {
-	ShipIterType selectedShipIter = shipSelect(ships, clickedPos);
-	if (selectedShipIter == ships.end()) {
+	auto selectedShipIter = shipSelect(ships, clickedPos);
+	if(selectedShipIter == ships.end()) {
 		return;
 	}
 	AShipBase* selectedShip = *selectedShipIter;
-	if (!selectedShip->isAnimated()) {
+	if(!selectedShip->isAnimated()) {
 		return;
 	}
-	if (selectedShip == selectedship) {
+	if(selectedShip == selectedship) {
 		selectedship = nullptr;
 	}
 	delete selectedShip;
@@ -60,58 +75,48 @@ void ShipController::mouseRightClick(const glm::vec2& clickedPos) {
 	ships.pop_back();
 }
 
-static std::string formatted(const std::string& format, int num) {
-    int size = std::snprintf(nullptr, 0, format.c_str(), num);
-    if(size <= 0) {
-    	return "";
-    }
-    std::vector<char> buffer(size + 1);
-    std::snprintf(buffer.data(), buffer.size(), format.c_str(), num);
-    return std::string(buffer.data());
-}
-
 void ShipController::setup(const float speedMul, const glm::vec2& minBoundary, const glm::vec2& maxBoundary) {
 	this->speedmul = speedMul;
 	this->minboundary = minBoundary;
 	this->maxboundary = maxBoundary;
-	SpriteAnimation* selectionAnim = new SpriteAnimation(25);
-	std::string pathFmt("platform_anim/platform_%d.png");
-	const std::string &baseDir = gObject::gGetImagesDir();
-		for(int i = 1; ;i++) {
-			std::string path = formatted(pathFmt, i);
-			if(gFile::doesFileExist(baseDir + path)) {
-				selectionAnim->loadFrame(path);
-			} else {
-				break;
-			}
+	auto *animatedFrames = new AnimatedFrames();
+	const std::string& baseDir = gObject::gGetImagesDir();
+	for(int i = 1; ; i++) {
+		std::string path = "platform_anim/platform_" + gToStr(i) + ".png";
+		if(gFile::doesFileExist(baseDir + path)) {
+			auto* img = new gImage();
+			img->loadImage(path);
+			animatedFrames->frames.push_back(img);
+		} else {
+			break;
 		}
+	}
+	auto* selectionAnim = new SpriteAnimation(animatedFrames, 25);
 	animator->addAnimation(selectionAnim);
 	animator->changeAnimation(selectionAnim->getId());
 }
 
 void ShipController::update(float deltaTime) {
-	for(AShipBase *ship : ships) {
+	for(AShipBase* ship : ships) {
 		AnimatedShip* animship = ship->isAnimated();
-		if (animship) {
+		if(animship) {
 			animship->update(deltaTime);
 		}
 	}
 	animator->update(deltaTime);
-	if (selectedship) {
+	if(selectedship) {
 		AnimatedShip* animship = selectedship->isAnimated();
-		if (animship) {
+		if(animship) {
 			animship->move(speed * speedmul * deltaTime, minboundary, maxboundary);
 		}
 	}
 }
 
-void ShipController::draw(void) {
-	if (selectedship) {
-		glm::vec2 pos = selectedship->getPosition();
-		glm::vec2 size = selectedship->getSize();
-		animator->draw(pos - size * 0.5f, size);
+void ShipController::draw() {
+	if(selectedship) {
+		animator->draw(selectedship->getPosition(), selectedship->getSize(), 30.0f);
 	}
-	for(AShipBase *ship : ships) {
+	for(AShipBase* ship : ships) {
 		ship->draw();
 	}
 }

@@ -1,4 +1,4 @@
- /*
+/*
  * gCanvas.h
  *
  *  Created on: May 6, 2020
@@ -29,7 +29,7 @@ public:
 	void keyPressed(int key);
 	void keyReleased(int key);
 	void charPressed(unsigned int codepoint);
-	void mouseMoved(int x, int y );
+	void mouseMoved(int x, int y);
 	void mouseDragged(int x, int y, int button);
 	void mousePressed(int x, int y, int button);
 	void mouseReleased(int x, int y, int button);
@@ -44,7 +44,7 @@ public:
 private:
 	gApp* root;
 	gImage background;
-	ShipController *shipcontroller;
+	ShipController* shipcontroller;
 };
 
 #endif /* GCANVAS_H_ */

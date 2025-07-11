@@ -19,7 +19,11 @@ gCanvas::~gCanvas() {
 
 void gCanvas::setup() {
 	background.loadImage("map.png");
-	shipcontroller->setup(1000.0f, glm::vec2(0.0f), glm::vec2(1920, 1080));
+	glm::vec2 windowSize = {
+			renderer->getUnitWidth(),
+			renderer->getUnitHeight()
+	};
+	shipcontroller->setup(1000.0f, glm::vec2(0.0f), windowSize);
 }
 
 void gCanvas::update() {
@@ -38,6 +42,7 @@ void gCanvas::keyPressed(int key) {
 		case GLFW_KEY_A: shipcontroller->APressed(); break;
 		case GLFW_KEY_S: shipcontroller->SPressed(); break;
 		case GLFW_KEY_D: shipcontroller->DPressed(); break;
+		default: break;
 	}
 }
 
@@ -47,6 +52,7 @@ void gCanvas::keyReleased(int key) {
 		case GLFW_KEY_A: shipcontroller->AReleased(); break;
 		case GLFW_KEY_S: shipcontroller->SReleased(); break;
 		case GLFW_KEY_D: shipcontroller->DReleased(); break;
+		default: break;
 	}
 }
 

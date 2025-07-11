@@ -10,26 +10,30 @@
 #include <string>
 #include <vector>
 #include <glm/glm.hpp>
+#include "datatypes/AnimatedFrames.h"
+
 
 class AnimatedShip;
 
 class AShipBase {
 public:
-	AShipBase(const std::string& pathFmt);
-	virtual ~AShipBase();
-public:
-	virtual glm::vec2 getPosition(void) const = 0;
-	virtual glm::vec2 getSize(void) const = 0;
-	bool collision(float& outMarginLen, const glm::vec2& clickPos);
-	virtual void draw(void) = 0;
-	AnimatedShip* isAnimated(void);
+	AShipBase(const AnimatedFrames* animatedFrames);
+	virtual ~AShipBase() = default;
+	virtual void draw() const = 0;
+	virtual glm::vec2 getPosition() const = 0;
+	virtual glm::vec2 getMidPosition() const = 0;
+	virtual glm::vec2 getSize() const = 0;
+	const AnimatedFrames* getAnimatedFrames() const;
+	bool collision(float& outMarginLen, const glm::vec2& clickPos) const;
+	AnimatedShip* isAnimated();
+
 protected:
-	std::string framepathfmt;
+	const AnimatedFrames* animatedframes;
 };
 
 using ShipListType = std::vector<AShipBase*>;
 using ShipIterType = ShipListType::iterator;
 
-ShipIterType shipSelect(ShipListType& ships, const glm::vec2 pos);
+ShipIterType shipSelect(ShipListType& ships, const glm::vec2& pos);
 
 #endif /* SRC_OBJECTS_SHIPINTERFACE_H_ */

@@ -7,16 +7,21 @@
 
 #include "animation/SpriteAnimation.h"
 
-SpriteAnimation::SpriteAnimation(int fps) {
+SpriteAnimation::SpriteAnimation(const AnimatedFrames* animatedFrames, int fps) {
+	if(animatedFrames == nullptr || animatedFrames->frames.empty()) {
+		gLoge("SpriteAnimation::SpriteAnimation") << "Animated frames are empty!";
+		return;
+	}
 	static int sid;
+	this->animatedframes = animatedFrames;
 	this->id = sid++;
-	this->fps = fps;
-	timer = 0.0f;
-	currentframe = 0;
+	this->frameduration = 1.0f / static_cast<float>(fps);
+	this->timer = 0.0f;
+	this->currentframe = 0;
 }
 
-SpriteAnimation::~SpriteAnimation(void) {
-	for (gImage *frame : frames) {
+SpriteAnimation::~SpriteAnimation() {
+	for(gImage* frame : animatedframes->frames) {
 		delete frame;
 	}
 }
@@ -24,30 +29,23 @@ SpriteAnimation::~SpriteAnimation(void) {
 void SpriteAnimation::update(float deltaTime) {
 	static int i;
 	timer += deltaTime;
-	float frameDuration = 1.0f / fps;
-	while (timer >= frameDuration) {
-		currentframe = (currentframe + 1) % frames.size();
-		timer -= frameDuration;
+	while(timer >= frameduration) {
+		currentframe = (currentframe + 1) % animatedframes->frames.size();
+		timer -= frameduration;
 	}
-}
-
-void SpriteAnimation::loadFrame(const std::string &framePath) {
-	gImage* img = new gImage();
-	img->loadImage(framePath);
-	frames.push_back(img);
 }
 
 void SpriteAnimation::setFps(int fps) {
-	this->fps = fps;
+	this->frameduration = 1.0f / static_cast<float>(fps);
 }
 
-int SpriteAnimation::getId(void) {
+int SpriteAnimation::getId() const {
 	return (id);
 }
 
-gImage* SpriteAnimation::getCurrentFrame(void) {
-	if(frames.empty()) {
+gImage* SpriteAnimation::getCurrentFrame() const {
+	if(animatedframes->frames.empty()) {
 		return nullptr;
 	}
-	return frames[currentframe % frames.size()];
+	return animatedframes->frames[currentframe % animatedframes->frames.size()];
 }

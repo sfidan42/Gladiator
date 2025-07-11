@@ -7,25 +7,25 @@
 
 #ifndef SRC_SPRITEANIMATION_H_
 #define SRC_SPRITEANIMATION_H_
-#include <vector>
 #include "gImage.h"
+#include "datatypes/AnimatedFrames.h"
+
 
 class SpriteAnimation {
 public:
-	SpriteAnimation(int fps = 6);
-	~SpriteAnimation(void);
+	SpriteAnimation(const AnimatedFrames* animatedFrames, int fps = 6);
+	~SpriteAnimation();
 public:
 	void update(float deltaTime);
 	void setFps(int fps);
-	void loadFrame(const std::string& framePath);
-	int getId(void);
-	gImage *getCurrentFrame(void);
+	int getId() const;
+	gImage *getCurrentFrame() const;
 private:
 	int id;
-	int fps;
+	float frameduration;
 	float timer;
-	int currentframe;
-	std::vector<gImage *> frames;
+	size_t currentframe;
+	const AnimatedFrames* animatedframes;
 };
 
 #endif /* SRC_SPRITEANIMATION_H_ */

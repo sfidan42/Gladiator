@@ -19,9 +19,7 @@
 #include "gApp.h"
 
 
-int main(int argc, char **argv) {
-
+int main(int argc, char** argv) {
 	gStartEngine(new gApp(argc, argv), "2D game", G_WINDOWMODE_APP, 1920, 1080, G_SCREENSCALING_AUTO, 1280, 720);
-
 	return 0;
 }

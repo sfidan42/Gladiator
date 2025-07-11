@@ -9,25 +9,23 @@
 #define SRC_OBJECTS_SHIP_H_
 #include <glm/glm.hpp>
 #include <glm/gtc/random.hpp>
-#include <string>
 #include "gImage.h"
-#include "gFile.h"
 #include "objects/AShipBase.h"
+#include "datatypes/AnimatedFrames.h"
 
 class Ship : public AShipBase {
-private:
-	Ship(void);
 public:
-	Ship(const std::string& pathFmt, glm::vec2 targetPos, glm::vec2 sourceSize, float targetSizeScale = 1.0f);
-	~Ship(void);
+	Ship() = delete;
+	Ship(const AnimatedFrames* animatedFrames, const glm::vec2& targetPos, const glm::vec2& sourceSize, float targetSizeScale = 1.0f);
+	~Ship() = default;
+
 public:
-	void setFrame(const std::string& framePath);
-	std::string getFramePathFmt(void) const;
-	glm::vec2 getPosition(void) const;
-	glm::vec2 getSize(void) const;
-	void draw(void);
+	glm::vec2 getPosition() const;
+	glm::vec2 getMidPosition() const;
+	glm::vec2 getSize() const;
+	void draw() const;
+
 private:
-	gImage *frame;
 	const glm::vec2 pos;
 	const glm::vec2 size;
 };

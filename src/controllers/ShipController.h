@@ -7,15 +7,13 @@
 
 #ifndef SRC_CONTROLLERS_SHIPCONTROLLER_H_
 #define SRC_CONTROLLERS_SHIPCONTROLLER_H_
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <vector>
-#include <string>
+#include <array>
 #include "gImage.h"
+#include "gFile.h"
 #include "objects/Ship.h"
 #include "objects/AnimatedShip.h"
-#include "animation/SpriteAnimation.h"
 #include "animation/SpriteAnimator.h"
 
 class ShipController {
@@ -33,13 +31,14 @@ public:
 	void DReleased() { speed.x -= 1.0f; }
 	void mouseLeftClick(const glm::vec2& clickedPos);
 	void mouseRightClick(const glm::vec2& clickedPos);
-	void setup(const float speedMul, const glm::vec2& minBoundary, const glm::vec2& maxBoundary);
+	void setup(float speedMul, const glm::vec2& minBoundary, const glm::vec2& maxBoundary);
 	void update(float deltaTime);
 	void draw();
 private:
 	glm::vec2 speed;
-	float speedmul = 1000.0f;
+	float speedmul;
 	AShipBase* selectedship;
+	std::array<AnimatedFrames, 4> listofanimatedframes;
 	std::vector<AShipBase*> ships;
 	glm::vec2 minboundary { 0.0f, 0.0f };
 	glm::vec2 maxboundary { FLT_MAX, FLT_MAX };

@@ -7,29 +7,33 @@
 
 #include "objects/AnimatedShip.h"
 
-AShipBase::AShipBase(const std::string& pathFmt) {
-	this->framepathfmt = pathFmt;
+AShipBase::AShipBase(const AnimatedFrames* animatedFrames)
+	: animatedframes(animatedFrames) {
+	if(animatedframes->frames.empty()) {
+		gLoge("AShipBase::AShipBase") << "Animated frames are empty!";
+	}
 }
 
-AnimatedShip* AShipBase::isAnimated(void) {
+AnimatedShip* AShipBase::isAnimated() {
 	return (dynamic_cast<AnimatedShip*>(this));
 }
 
-AShipBase::~AShipBase() {
+const AnimatedFrames* AShipBase::getAnimatedFrames() const {
+	return animatedframes;
 }
 
-bool AShipBase::collision(float& outMarginLen, const glm::vec2 &clickPos) {
-	outMarginLen = glm::length(clickPos - getPosition());
+bool AShipBase::collision(float& outMarginLen, const glm::vec2& clickPos) const {
+	outMarginLen = glm::length(clickPos - getMidPosition());
 	return (outMarginLen <= glm::length(getSize() * 0.5f));
 }
 
-ShipIterType shipSelect(ShipListType& ships, const glm::vec2 pos) {
-	ShipIterType selectedShipIter = ships.end();
+ShipIterType shipSelect(ShipListType& ships, const glm::vec2& pos) {
+	auto selectedShipIter = ships.end();
 	float marginLen;
 	float smallestMarginLen = FLT_MAX;
-	for (ShipIterType shipIter = ships.begin(); shipIter != ships.end(); shipIter++) {
-		if ((*shipIter)->collision(marginLen, pos)) {
-			if (marginLen <= smallestMarginLen) {
+	for(auto shipIter = ships.begin(); shipIter != ships.end(); shipIter++) {
+		if((*shipIter)->collision(marginLen, pos)) {
+			if(marginLen <= smallestMarginLen) {
 				smallestMarginLen = marginLen;
 				selectedShipIter = shipIter;
 			}

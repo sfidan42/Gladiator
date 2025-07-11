@@ -7,17 +7,7 @@
 
 #include "animation/SpriteAnimator.h"
 
-SpriteAnimator::SpriteAnimator() {
-	currentanim = nullptr;
-}
-
-SpriteAnimator::~SpriteAnimator() {
-	for(SpriteAnimation* anim : animations) {
-		delete anim;
-	}
-}
-
-void SpriteAnimator::addAnimation(SpriteAnimation *anim) {
+void SpriteAnimator::addAnimation(SpriteAnimation* anim) {
 	if(!anim) {
 		return;
 	}
@@ -38,12 +28,12 @@ void SpriteAnimator::changeAnimation(int id) {
 }
 
 void SpriteAnimator::changeCurrentFps(int fps) {
-	if (!currentanim) {
+	if(!currentanim) {
 		return;
 	}
 	int id = currentanim->getId();
-	for (SpriteAnimation* anim : animations) {
-		if (anim->getId() == id) {
+	for(SpriteAnimation* anim : animations) {
+		if(anim->getId() == id) {
 			anim->setFps(fps);
 			return;
 		}
@@ -68,13 +58,13 @@ void SpriteAnimator::draw(int x, int y) {
 	}
 }
 
-void SpriteAnimator::draw(int x, int y, int w, int h) {
+void SpriteAnimator::draw(int x, int y, int w, int h, float angle) {
 	if(!currentanim) {
 		return;
 	}
 	gImage* currentframe = currentanim->getCurrentFrame();
 	if(currentframe) {
-		currentframe->draw(x, y, w, h);
+		currentframe->draw(x, y, w, h, angle);
 	}
 }
 
@@ -82,6 +72,6 @@ void SpriteAnimator::draw(const glm::vec2& pos) {
 	this->draw(pos.x, pos.y);
 }
 
-void SpriteAnimator::draw(const glm::vec2& pos, const glm::vec2& size) {
-	this->draw(pos.x, pos.y, size.x, size.y);
+void SpriteAnimator::draw(const glm::vec2& pos, const glm::vec2& size, float angle) {
+	this->draw(pos.x, pos.y, size.x, size.y, angle);
 }
