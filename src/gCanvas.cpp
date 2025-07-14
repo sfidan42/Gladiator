@@ -12,7 +12,7 @@ gCanvas::gCanvas(gApp* root) : gBaseCanvas(root) {
 	this->root = root;
 	shipcontroller = new ShipController();
 	playerplatformctrl = new PlatformController("silahli_gemi1.png", {{441, 126}, {441, 635}}, {272, 310}, 90.0f);
-	enemyplatformctrl = new PlatformController("silahli_dusmangemi1.png", {{1241, 126}, {1241, 635}}, {272, 310}, -90.0f);
+	enemyplatformctrl = new PlatformController("silahli_dusmangemi1.png", {{1241, 126}, {1241, 635}}, {272, 310}, 90.0f);
 }
 
 gCanvas::~gCanvas() {

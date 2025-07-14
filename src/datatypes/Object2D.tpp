@@ -149,7 +149,7 @@ void Object2D<Type2D::VECTOR, position, tex>::addTexture(typename Texture2DTrait
 }
 
 template <Pos2D position, Tex2D tex>
-void Object2D<Type2D::VECTOR, position, tex>::addObject2D(size_t index,
+void Object2D<Type2D::VECTOR, position, tex>::addObject2D(size_t textureIndex,
 	const glm::vec2& pos, const glm::vec2& size, float sizeScale, float angle) {
 	using TextureType = typename Texture2DTraits<tex>::type;
 	if (index >= texturelist.size()) {

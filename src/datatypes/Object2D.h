@@ -96,7 +96,7 @@ public:
 	void update(float deltaTime);
 	void draw() const;
 	void addTexture(TextureType* texture);
-	void addObject2D(size_t index,
+	void addObject2D(size_t textureIndex,
 		const glm::vec2& pos, const glm::vec2& size,
 		float sizeScale = 1.0f, float angle = 0.0f);
 private:
