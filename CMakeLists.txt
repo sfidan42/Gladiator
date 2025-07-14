@@ -109,11 +109,9 @@ set(GlistApp_SOURCES
 		${APP_DIR}/src/gCanvas.cpp
 		${APP_DIR}/src/animation/SpriteAnimator.cpp
 		${APP_DIR}/src/animation/SpriteAnimation.cpp
-		${APP_DIR}/src/objects/AShipBase.cpp
-		${APP_DIR}/src/objects/Ship.cpp
-		${APP_DIR}/src/objects/AnimatedShip.cpp
 		${APP_DIR}/src/controllers/ShipController.cpp
 		${APP_DIR}/src/datatypes/AnimatedFrames.cpp
+		${APP_DIR}/src/controllers/PlatformController.cpp
 )
 
 add_executable(${APP_NAME}

@@ -12,15 +12,14 @@
 #include <array>
 #include "gImage.h"
 #include "gFile.h"
-#include "objects/Ship.h"
-#include "objects/AnimatedShip.h"
 #include "animation/SpriteAnimator.h"
+#include "datatypes/Object2D.h"
+
 
 class ShipController {
 public:
 	ShipController();
 	~ShipController();
-public:
 	void WPressed() { speed.y -= 1.0f; }
 	void APressed() { speed.x -= 1.0f; }
 	void SPressed() { speed.y += 1.0f; }
@@ -29,17 +28,17 @@ public:
 	void AReleased() { speed.x += 1.0f; }
 	void SReleased() { speed.y -= 1.0f; }
 	void DReleased() { speed.x -= 1.0f; }
-	void mouseLeftClick(const glm::vec2& clickedPos);
-	void mouseRightClick(const glm::vec2& clickedPos);
+	//void mouseLeftClick(const glm::vec2& clickedPos);
+	//void mouseRightClick(const glm::vec2& clickedPos);
 	void setup(float speedMul, const glm::vec2& minBoundary, const glm::vec2& maxBoundary);
 	void update(float deltaTime);
 	void draw();
 private:
 	glm::vec2 speed;
 	float speedmul;
-	AShipBase* selectedship;
-	std::array<AnimatedFrames, 4> listofanimatedframes;
-	std::vector<AShipBase*> ships;
+
+	Object2DInterface<Tex2D::SPRITE>* selectedship;
+	Object2D<Type2D::VECTOR, Pos2D::MOVING, Tex2D::SPRITE>* ships;
 	glm::vec2 minboundary;
 	glm::vec2 maxboundary;
 	SpriteAnimator *animator;

@@ -10,16 +10,15 @@
 #include "gImage.h"
 #include "datatypes/AnimatedFrames.h"
 
-
 class SpriteAnimation {
 public:
 	SpriteAnimation(const AnimatedFrames* animatedFrames, int fps = 6);
 	~SpriteAnimation();
-public:
 	void update(float deltaTime);
 	void setFps(int fps);
 	int getId() const;
-	gImage *getCurrentFrame() const;
+	gImage* getCurrentFrame() const;
+
 private:
 	int id;
 	float frameduration;

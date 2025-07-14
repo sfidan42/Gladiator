@@ -10,35 +10,33 @@
 ShipController::ShipController()
 	: speed(0.0f, 0.0f), selectedship(nullptr), speedmul(1000.0f),
 	  minboundary(0.0f, 0.0f), maxboundary(200.0f, 150.0f) {
+	ships = new Object2D<Type2D::VECTOR, Pos2D::MOVING, Tex2D::SPRITE>;
 	for(int i = 1; i <= 4; ++i) {
-		AnimatedFrames animatedFrames;
+		auto* texture = new AnimatedFrames();
 		for(int j = 1; ; ++j) {
 			std::string path = "gemiler/ship_" + gToStr(i) + "/ship_" + gToStr(i) + "_" + gToStr(j) + ".png";
-			if(!gFile::doesFileExist(gObject::gGetImagesDir() + path)) {
+			auto* img = new gImage();
+			if (!gFile::doesFileExist(gFile::gGetImagesDir() + path) || !img->loadImage(path)) {
 				gLogw("ShipController::ShipController") << "No more frames found for: " << path;
+				delete img;
 				break;
 			}
-			auto* img = new gImage();
-			img->loadImage(path);
-			animatedFrames.frames.push_back(img);
+			texture->frames.push_back(img);
 		}
-		listofanimatedframes[i - 1] = std::move(animatedFrames);
+		ships->addTexture(texture);
 	}
-	ships.reserve(4);
-	ships.push_back(new Ship(&listofanimatedframes[0], {60, 20}, {242, 239}));
-	ships.push_back(new Ship(&listofanimatedframes[1], {90, 310}, {170, 193}));
-	ships.push_back(new Ship(&listofanimatedframes[2], {47, 557}, {255, 250}));
-	ships.push_back(new Ship(&listofanimatedframes[3], {110, 900}, {130, 97}));
+	ships->addObject2D(0, {60, 20}, {242, 239});
+	ships->addObject2D(1, {90, 310}, {170, 193});
+	ships->addObject2D(2, {47, 557}, {255, 250});
+	ships->addObject2D(3, {110, 900}, {130, 97});
 	animator = new SpriteAnimator();
 }
 
 ShipController::~ShipController() {
-	for(AShipBase* ship : ships) {
-		delete ship;
-	}
+	delete ships;
 	delete animator;
 }
-
+/*
 void ShipController::mouseLeftClick(const glm::vec2& clickedPos) {
 	selectedship = nullptr;
 	auto selectedShipIter = shipSelect(ships, clickedPos);
@@ -74,7 +72,7 @@ void ShipController::mouseRightClick(const glm::vec2& clickedPos) {
 	*selectedShipIter = ships.back();
 	ships.pop_back();
 }
-
+*/
 void ShipController::setup(const float speedMul, const glm::vec2& minBoundary, const glm::vec2& maxBoundary) {
 	this->speedmul = speedMul;
 	this->minboundary = minBoundary;
@@ -97,17 +95,13 @@ void ShipController::setup(const float speedMul, const glm::vec2& minBoundary, c
 }
 
 void ShipController::update(float deltaTime) {
-	for(AShipBase* ship : ships) {
-		AnimatedShip* animShip = ship->isAnimated();
-		if(animShip) {
-			animShip->update(deltaTime);
-		}
-	}
+	ships->update(deltaTime);
 	animator->update(deltaTime);
 	if(selectedship) {
-		AnimatedShip* animShip = selectedship->isAnimated();
-		if(animShip) {
-			animShip->move(speed * speedmul * deltaTime, this->minboundary, this->maxboundary);
+		auto* movableShip = selectedship->getAlive();
+		if(movableShip) {
+			movableShip->move(speed * speedmul * deltaTime, this->minboundary, this->maxboundary);
+		} else {
 		}
 	}
 }
@@ -123,7 +117,5 @@ void ShipController::draw() {
 		curPos -= curFrameSize * 0.5f;
 		animator->draw(curPos, curFrameSize, 30.0f);
 	}
-	for(AShipBase* ship : ships) {
-		ship->draw();
-	}
+	ships->draw();
 }

@@ -27,7 +27,7 @@ public:
 	const gImage* getCurrentFrame() const;
 private:
 	std::vector<SpriteAnimation*> animations;
-	SpriteAnimation* currentanim;
+	SpriteAnimation* currentanim = nullptr;
 };
 
 #endif /* SRC_SPRITEANIMATOR_H_ */
