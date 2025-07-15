@@ -4,23 +4,6 @@
 
 #include "controllers/PlatformController.h"
 
-#include "datatypes/AnimatedFrames.h"
-#include "datatypes/AnimatedFrames.h"
-#include "datatypes/AnimatedFrames.h"
-#include "datatypes/AnimatedFrames.h"
-#include "datatypes/AnimatedFrames.h"
-#include "datatypes/AnimatedFrames.h"
-#include "datatypes/AnimatedFrames.h"
-#include "datatypes/AnimatedFrames.h"
-#include "datatypes/Object2DNode.h"
-#include "datatypes/Object2DNode.h"
-#include "datatypes/Object2DNode.h"
-#include "datatypes/Object2DNode.h"
-#include "datatypes/Object2DNode.h"
-#include "datatypes/Object2DNode.h"
-#include "datatypes/Object2DNode.h"
-#include "datatypes/Object2DNode.h"
-
 PlatformController::PlatformController(const std::string& path, std::initializer_list<glm::vec2> positions, const glm::vec2& platformSize, float angle)
 	: selectedplatform(nullptr) {
 	platforms = new Object2D<Type2D::VECTOR, Pos2D::FIXED, Tex2D::IMAGE>();

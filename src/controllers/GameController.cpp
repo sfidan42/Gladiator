@@ -29,8 +29,6 @@ void GameController::mouseLeftClick(const glm::vec2& clickedPos) {
 	if (previouslySelectedShip && currentlySelectedPlatform && !currentlySelectedShip) {
 		previouslySelectedShip->move(currentlySelectedPlatform);
 		previouslySelectedShip->rotate(180.0f);
-	} else if (previouslySelectedPlatform && currentlySelectedShip && !currentlySelectedPlatform) {
-		currentlySelectedShip->move(previouslySelectedPlatform);
 	}
 }
 
