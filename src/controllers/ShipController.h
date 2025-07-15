@@ -33,6 +33,11 @@ public:
 	void setup(float speedMul, const glm::vec2& minBoundary, const glm::vec2& maxBoundary);
 	void update(float deltaTime);
 	void draw();
+
+	Object2D<Type2D::NODE, Pos2D::MOVING, Tex2D::SPRITE>* getSelectedShip() const {
+		return dynamic_cast<Object2D<Type2D::NODE, Pos2D::MOVING, Tex2D::SPRITE>*>(selectedship);
+	}
+
 private:
 	glm::vec2 speed;
 	float speedmul;

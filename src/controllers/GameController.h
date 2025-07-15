@@ -1,0 +1,33 @@
+//
+// Created by sadettin on 7/15/25.
+//
+
+#ifndef GAMECONTROLLER_H
+#define GAMECONTROLLER_H
+#include "controllers/ShipController.h"
+#include "controllers/PlatformController.h"
+
+class GameController {
+public:
+	GameController();
+	~GameController();
+	void WPressed() { shipcontroller->WPressed(); }
+	void APressed() { shipcontroller->APressed(); }
+	void SPressed() { shipcontroller->SPressed(); }
+	void DPressed() { shipcontroller->DPressed(); }
+	void WReleased() { shipcontroller->WReleased(); }
+	void AReleased() { shipcontroller->AReleased(); }
+	void SReleased() { shipcontroller->SReleased(); }
+	void DReleased() { shipcontroller->DReleased(); }
+	void mouseLeftClick(const glm::vec2& clickedPos);
+	void mouseRightClick(const glm::vec2& clickedPos);
+	void setup(float speedMul, const glm::vec2& minBoundary, const glm::vec2& maxBoundary) { shipcontroller->setup(speedMul, minBoundary, maxBoundary); }
+	void update(float deltaTime) { shipcontroller->update(deltaTime); }
+	void draw() { playerplatformctrl->draw(); enemyplatformctrl->draw(); shipcontroller->draw(); }
+private:
+	ShipController* shipcontroller;
+	PlatformController* playerplatformctrl;
+	PlatformController* enemyplatformctrl;
+};
+
+#endif //GAMECONTROLLER_H

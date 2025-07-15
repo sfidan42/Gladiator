@@ -10,15 +10,11 @@
 
 gCanvas::gCanvas(gApp* root) : gBaseCanvas(root) {
 	this->root = root;
-	shipcontroller = new ShipController();
-	playerplatformctrl = new PlatformController("silahli_gemi1.png", {{441, 126}, {441, 635}}, {272, 310}, 90.0f);
-	enemyplatformctrl = new PlatformController("silahli_dusmangemi1.png", {{1471, 126}, {1471, 635}}, {272, 310}, 90.0f);
+	gamecontroller = new GameController();
 }
 
 gCanvas::~gCanvas() {
-	delete shipcontroller;
-	delete playerplatformctrl;
-	delete enemyplatformctrl;
+	delete gamecontroller;
 }
 
 void gCanvas::setup() {
@@ -32,30 +28,29 @@ void gCanvas::setup() {
 		renderer->getUnitWidth(),
 		renderer->getUnitHeight()
 	};
-	shipcontroller->setup(1000.0f, glm::vec2(0.0f), windowSize);
+	windowSize.x *= 0.5f;
+	gamecontroller->setup(1000.0f, glm::vec2(0.0f), windowSize);
 }
 
 void gCanvas::update() {
 	float deltaTime = appmanager->getElapsedTime();
-	shipcontroller->update(deltaTime);
+	gamecontroller->update(deltaTime);
 }
 
 void gCanvas::draw() {
 	background.draw(0, 0);
-	playerplatformctrl->draw();
-	enemyplatformctrl->draw();
-	shipcontroller->draw();
+	gamecontroller->draw();
 }
 
 void gCanvas::keyPressed(int key) {
 	switch(key) {
-	case G_KEY_W: shipcontroller->WPressed();
+	case G_KEY_W: gamecontroller->WPressed();
 		break;
-	case G_KEY_A: shipcontroller->APressed();
+	case G_KEY_A: gamecontroller->APressed();
 		break;
-	case G_KEY_S: shipcontroller->SPressed();
+	case G_KEY_S: gamecontroller->SPressed();
 		break;
-	case G_KEY_D: shipcontroller->DPressed();
+	case G_KEY_D: gamecontroller->DPressed();
 		break;
 	default: break;
 	}
@@ -63,13 +58,13 @@ void gCanvas::keyPressed(int key) {
 
 void gCanvas::keyReleased(int key) {
 	switch(key) {
-	case G_KEY_W: shipcontroller->WReleased();
+	case G_KEY_W: gamecontroller->WReleased();
 		break;
-	case G_KEY_A: shipcontroller->AReleased();
+	case G_KEY_A: gamecontroller->AReleased();
 		break;
-	case G_KEY_S: shipcontroller->SReleased();
+	case G_KEY_S: gamecontroller->SReleased();
 		break;
-	case G_KEY_D: shipcontroller->DReleased();
+	case G_KEY_D: gamecontroller->DReleased();
 		break;
 	default: break;
 	}
@@ -90,10 +85,10 @@ void gCanvas::mouseDragged(int x, int y, int button) {
 void gCanvas::mousePressed(int x, int y, int button) {
 	switch(button) {
 	case GLFW_MOUSE_BUTTON_LEFT:
-		shipcontroller->mouseLeftClick(glm::vec2(x, y));
+		gamecontroller->mouseLeftClick(glm::vec2(x, y));
 		break;
 	case GLFW_MOUSE_BUTTON_RIGHT:
-		shipcontroller->mouseRightClick(glm::vec2(x, y));
+		gamecontroller->mouseRightClick(glm::vec2(x, y));
 		break;
 	default:
 		break;

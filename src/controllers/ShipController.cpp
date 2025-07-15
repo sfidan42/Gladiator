@@ -8,7 +8,7 @@
 #include "controllers/ShipController.h"
 
 ShipController::ShipController()
-	: speed(0.0f, 0.0f), selectedship(nullptr), speedmul(1000.0f),
+	: speed(0.0f, 0.0f), speedmul(1000.0f), selectedship(nullptr),
 	  minboundary(0.0f, 0.0f), maxboundary(200.0f, 150.0f) {
 	fixedships = new Object2D<Type2D::VECTOR, Pos2D::FIXED, Tex2D::SPRITE>;
 	for(int i = 1; i <= 4; ++i) {
@@ -46,17 +46,16 @@ void ShipController::mouseLeftClick(const glm::vec2& clickedPos) {
 	if (movableIt != movableships->end()) {
 		selectedship = *movableIt;
 		gLogi("ShipController::mouseLeftClick")
-			<< "Selected moving ship with id " << selectedship->getId()
+			<< "Selected movable ship with id " << selectedship->getId()
 			<< " at position: " << clickedPos.x << ", " << clickedPos.y;
 		return;
 	}
 	// If not found, check template (FIXED) ships
 	auto fixedIt = fixedships->selectObject2D(clickedPos);
 	if (fixedIt != fixedships->end()) {
-		Object2D<Type2D::INTERFACE, Pos2D::FIXED, Tex2D::SPRITE>* fixedShip = *fixedIt;
-		auto* movingShipCopy = new Object2D<Type2D::NODE, Pos2D::MOVING, Tex2D::SPRITE>(
-			*dynamic_cast<Object2D<Type2D::NODE, Pos2D::FIXED, Tex2D::SPRITE>*>(fixedShip)
-		);
+		Object2D<Type2D::INTERFACE, Pos2D::FIXED, Tex2D::SPRITE>* fixedShipBase = *fixedIt;
+		auto* fixedShip = dynamic_cast<Object2D<Type2D::NODE, Pos2D::FIXED, Tex2D::SPRITE>*>(fixedShipBase);
+		auto* movingShipCopy = new Object2D<Type2D::NODE, Pos2D::MOVING, Tex2D::SPRITE>(*fixedShip);
 		movableships->push_back(movingShipCopy);
 		selectedship = movingShipCopy;
 		gLogi("ShipController::mouseLeftClick")

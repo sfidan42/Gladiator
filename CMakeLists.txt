@@ -112,6 +112,7 @@ set(GlistApp_SOURCES
 		${APP_DIR}/src/controllers/ShipController.cpp
 		${APP_DIR}/src/datatypes/AnimatedFrames.cpp
 		${APP_DIR}/src/controllers/PlatformController.cpp
+		${APP_DIR}/src/controllers/GameController.cpp
 )
 
 add_executable(${APP_NAME}

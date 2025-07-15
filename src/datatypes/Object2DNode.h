@@ -29,15 +29,14 @@ struct Texture2DTraits<Tex2D::SPRITE> {
 	using type = AnimatedFrames;
 };
 
-#define TEXTURE2D typename Texture2DTraits<tex>::type
-
-template <Type2D type, Pos2D position, Tex2D texture>
+template <Type2D TY, Pos2D P, Tex2D TX>
 class Object2D;
 
-template <Pos2D position, Tex2D tex>
-class Object2D<Type2D::INTERFACE, position, tex> {
+template <Pos2D P, Tex2D TX>
+class Object2D<Type2D::INTERFACE, P, TX> {
+	using TextureType = typename Texture2DTraits<TX>::type;
 public:
-	Object2D(TEXTURE2D* _texture);
+	Object2D(TextureType* _texture);
 	virtual ~Object2D() = default;
 	virtual glm::vec2 getPosition() const = 0;
 	virtual glm::vec2 getMidPosition() const = 0;
@@ -46,28 +45,29 @@ public:
 	virtual int getId() const = 0;
 	virtual void draw() = 0;
 
-	Object2D<Type2D::NODE, Pos2D::MOVING, tex>* getMovable();
-	Object2D<Type2D::NODE, position, Tex2D::SPRITE>* getAnimated();
+	Object2D<Type2D::NODE, Pos2D::MOVING, TX>* getMovable();
+	Object2D<Type2D::NODE, P, Tex2D::SPRITE>* getAnimated();
 
-	TEXTURE2D* getTexture() const { return texture; }
+	TextureType* getTexture() const { return texture; }
 
 	bool collision(float& outMarginLen, const glm::vec2& clickPos) const;
 
 protected:
-	TEXTURE2D* texture;
+	TextureType* texture;
 };
 
 #include "datatypes/Object2DInterface.tpp"
 
-template <Pos2D position, Tex2D tex>
-class Object2D<Type2D::NODE, position, tex> : public Object2D<Type2D::INTERFACE, position, tex> {
+template <Pos2D P, Tex2D TX>
+class Object2D<Type2D::NODE, P, TX> : public Object2D<Type2D::INTERFACE, P, TX> {
+	using TextureType = typename Texture2DTraits<TX>::type;
 public:
-	Object2D(TEXTURE2D* texture,
+	Object2D(TextureType* texture,
 	         const glm::vec2& targetPos, const glm::vec2& sourceSize,
 	         float targetSizeScale = 1.0f, float targetAngle = 0.0f);
 
-	template <Pos2D P = position, typename std::enable_if<P == Pos2D::MOVING, int>::type = 0>
-	Object2D(const Object2D<Type2D::NODE, Pos2D::FIXED, tex>& ship);
+	template <Pos2D p = P, typename std::enable_if<p == Pos2D::MOVING, int>::type = 0>
+	Object2D(const Object2D<Type2D::NODE, Pos2D::FIXED, TX>& ship);
 
 	~Object2D();
 
@@ -77,15 +77,21 @@ public:
 	float getAngle() const { return angle; }
 	int getId() const { return id; }
 
-	template <Tex2D T = tex, typename std::enable_if<T == Tex2D::SPRITE, int>::type = 0>
+	template <Tex2D tx = TX, typename std::enable_if<tx == Tex2D::SPRITE, int>::type = 0>
 	void update(float deltaTime);
 
-	template <Pos2D P = position, typename std::enable_if<P == Pos2D::MOVING, int>::type = 0>
+	template <Pos2D p = P, typename std::enable_if<p == Pos2D::MOVING, int>::type = 0>
 	void move(const glm::vec2& stepSize, const glm::vec2& minBoundary, const glm::vec2& maxBoundary);
+
+	template <Pos2D P2, Tex2D T2>
+	void move(const Object2D<Type2D::NODE, P2, T2>* targetObject);
+
+	void rotate(float angle);
 
 	void draw();
 
 private:
+
 	void drawImpl(std::integral_constant<Tex2D, Tex2D::IMAGE>);
 	void drawImpl(std::integral_constant<Tex2D, Tex2D::SPRITE>);
 
@@ -99,9 +105,9 @@ private:
 
 #include "datatypes/Object2DNode.tpp"
 
-template <Pos2D position, Tex2D tex>
-class Object2D<Type2D::VECTOR, position, tex> {
-	using TextureType = TEXTURE2D;
+template <Pos2D P, Tex2D TX>
+class Object2D<Type2D::VECTOR, P, TX> {
+	using TextureType = typename Texture2DTraits<TX>::type;
 
 public:
 	Object2D() = default;
@@ -115,18 +121,18 @@ public:
 	                 const glm::vec2& pos, const glm::vec2& size,
 	                 float sizeScale = 1.0f, float angle = 0.0f);
 
-	using it = typename std::vector<Object2D<Type2D::INTERFACE, position, tex>*>::iterator;
+	using it = typename std::vector<Object2D<Type2D::INTERFACE, P, TX>*>::iterator;
 	it begin() { return children.begin(); }
 	it end() { return children.end(); }
-	Object2D<Type2D::INTERFACE, position, tex>* back() { return children.back(); }
-	Object2D<Type2D::INTERFACE, position, tex>* front() { return children.front(); }
-	void push_back(Object2D<Type2D::INTERFACE, position, tex>* obj) { children.push_back(obj); }
+	Object2D<Type2D::INTERFACE, P, TX>* back() { return children.back(); }
+	Object2D<Type2D::INTERFACE, P, TX>* front() { return children.front(); }
+	void push_back(Object2D<Type2D::INTERFACE, P, TX>* obj) { children.push_back(obj); }
 	void pop_back() { children.pop_back(); }
 
 	it selectObject2D(const glm::vec2& clickPos);
 
 private:
-	std::vector<Object2D<Type2D::INTERFACE, position, tex>*> children;
+	std::vector<Object2D<Type2D::INTERFACE, P, TX>*> children;
 	std::vector<TextureType*> texturelist;
 };
 

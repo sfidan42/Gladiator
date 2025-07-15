@@ -12,8 +12,7 @@
 #include "gApp.h"
 #include <gImage.h>
 #include <GLFW/glfw3.h>
-#include "controllers/ShipController.h"
-#include "controllers/PlatformController.h"
+#include "controllers/GameController.h"
 
 class gCanvas : public gBaseCanvas {
 public:
@@ -42,9 +41,7 @@ public:
 private:
 	gApp* root;
 	gImage background;
-	ShipController* shipcontroller;
-	PlatformController* playerplatformctrl;
-	PlatformController* enemyplatformctrl;
+	GameController *gamecontroller;
 };
 
 #endif /* GCANVAS_H_ */
