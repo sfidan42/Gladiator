@@ -12,7 +12,7 @@ gCanvas::gCanvas(gApp* root) : gBaseCanvas(root) {
 	this->root = root;
 	shipcontroller = new ShipController();
 	playerplatformctrl = new PlatformController("silahli_gemi1.png", {{441, 126}, {441, 635}}, {272, 310}, 90.0f);
-	enemyplatformctrl = new PlatformController("silahli_dusmangemi1.png", {{1241, 126}, {1241, 635}}, {272, 310}, 90.0f);
+	enemyplatformctrl = new PlatformController("silahli_dusmangemi1.png", {{1471, 126}, {1471, 635}}, {272, 310}, 90.0f);
 }
 
 gCanvas::~gCanvas() {
@@ -90,10 +90,10 @@ void gCanvas::mouseDragged(int x, int y, int button) {
 void gCanvas::mousePressed(int x, int y, int button) {
 	switch(button) {
 	case GLFW_MOUSE_BUTTON_LEFT:
-		//shipcontroller->mouseLeftClick(glm::vec2(x, y));
+		shipcontroller->mouseLeftClick(glm::vec2(x, y));
 		break;
 	case GLFW_MOUSE_BUTTON_RIGHT:
-		//shipcontroller->mouseRightClick(glm::vec2(x, y));
+		shipcontroller->mouseRightClick(glm::vec2(x, y));
 		break;
 	default:
 		break;

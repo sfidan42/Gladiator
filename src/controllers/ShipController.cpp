@@ -10,7 +10,7 @@
 ShipController::ShipController()
 	: speed(0.0f, 0.0f), selectedship(nullptr), speedmul(1000.0f),
 	  minboundary(0.0f, 0.0f), maxboundary(200.0f, 150.0f) {
-	ships = new Object2D<Type2D::VECTOR, Pos2D::MOVING, Tex2D::SPRITE>;
+	fixedships = new Object2D<Type2D::VECTOR, Pos2D::FIXED, Tex2D::SPRITE>;
 	for(int i = 1; i <= 4; ++i) {
 		auto* texture = new AnimatedFrames();
 		for(int j = 1; ; ++j) {
@@ -23,56 +23,62 @@ ShipController::ShipController()
 			}
 			texture->frames.push_back(img);
 		}
-		ships->addTexture(texture);
+		fixedships->addTexture(texture);
 	}
-	ships->addObject2D(0, {60, 20}, {242, 239});
-	ships->addObject2D(1, {90, 310}, {170, 193});
-	ships->addObject2D(2, {47, 557}, {255, 250});
-	ships->addObject2D(3, {110, 900}, {130, 97});
+	fixedships->addObject2D(0, {60, 20}, {242, 239});
+	fixedships->addObject2D(1, {90, 310}, {170, 193});
+	fixedships->addObject2D(2, {47, 557}, {255, 250});
+	fixedships->addObject2D(3, {110, 900}, {130, 97});
+	movableships = new Object2D<Type2D::VECTOR, Pos2D::MOVING, Tex2D::SPRITE>;
 	animator = new SpriteAnimator();
 }
 
 ShipController::~ShipController() {
-	delete ships;
+	delete fixedships;
+	delete movableships;
 	delete animator;
 }
-/*
+
 void ShipController::mouseLeftClick(const glm::vec2& clickedPos) {
 	selectedship = nullptr;
-	auto selectedShipIter = shipSelect(ships, clickedPos);
-	if(selectedShipIter == ships.end()) {
+	// Try selecting a MOVING ship first
+	auto movableIt = movableships->selectObject2D(clickedPos);
+	if (movableIt != movableships->end()) {
+		selectedship = *movableIt;
+		gLogi("ShipController::mouseLeftClick")
+			<< "Selected moving ship with id " << selectedship->getId()
+			<< " at position: " << clickedPos.x << ", " << clickedPos.y;
 		return;
 	}
-	AShipBase* newSelectedShip = *selectedShipIter;
-	if(newSelectedShip->isAnimated()) {
-		selectedship = newSelectedShip;
-		return;
+	// If not found, check template (FIXED) ships
+	auto fixedIt = fixedships->selectObject2D(clickedPos);
+	if (fixedIt != fixedships->end()) {
+		Object2D<Type2D::INTERFACE, Pos2D::FIXED, Tex2D::SPRITE>* fixedShip = *fixedIt;
+		auto* movingShipCopy = new Object2D<Type2D::NODE, Pos2D::MOVING, Tex2D::SPRITE>(
+			*dynamic_cast<Object2D<Type2D::NODE, Pos2D::FIXED, Tex2D::SPRITE>*>(fixedShip)
+		);
+		movableships->push_back(movingShipCopy);
+		selectedship = movingShipCopy;
+		gLogi("ShipController::mouseLeftClick")
+			<< "Selected fixed ship with id " << selectedship->getId()
+			<< " at position: " << clickedPos.x << ", " << clickedPos.y;
 	}
-	Ship* ship = dynamic_cast<Ship*>(newSelectedShip);
-	auto* animship = new AnimatedShip(*ship);
-	animship->changeCurrentFps(12);
-	newSelectedShip = dynamic_cast<AShipBase*>(animship);
-	ships.push_back(newSelectedShip);
-	selectedship = newSelectedShip;
 }
 
 void ShipController::mouseRightClick(const glm::vec2& clickedPos) {
-	auto selectedShipIter = shipSelect(ships, clickedPos);
-	if(selectedShipIter == ships.end()) {
+	auto movableIt = movableships->selectObject2D(clickedPos);
+	if(movableIt == movableships->end()) {
 		return;
 	}
-	AShipBase* selectedShip = *selectedShipIter;
-	if(!selectedShip->isAnimated()) {
-		return;
-	}
-	if(selectedShip == selectedship) {
+	Object2D<Type2D::INTERFACE, Pos2D::MOVING, Tex2D::SPRITE>* selectedMovable = *movableIt;
+	if(selectedMovable == selectedship) {
 		selectedship = nullptr;
 	}
-	delete selectedShip;
-	*selectedShipIter = ships.back();
-	ships.pop_back();
+	delete selectedMovable;
+	*movableIt = movableships->back();
+	movableships->pop_back();
 }
-*/
+
 void ShipController::setup(const float speedMul, const glm::vec2& minBoundary, const glm::vec2& maxBoundary) {
 	this->speedmul = speedMul;
 	this->minboundary = minBoundary;
@@ -95,13 +101,16 @@ void ShipController::setup(const float speedMul, const glm::vec2& minBoundary, c
 }
 
 void ShipController::update(float deltaTime) {
-	ships->update(deltaTime);
+	movableships->update(deltaTime);
 	animator->update(deltaTime);
 	if(selectedship) {
-		auto* movableShip = selectedship->getAlive();
+		auto* movableShip = selectedship->getMovable();
 		if(movableShip) {
-			movableShip->move(speed * speedmul * deltaTime, this->minboundary, this->maxboundary);
+			glm::vec2 stepSize = speed * speedmul * deltaTime;
+			movableShip->move(stepSize, minboundary, maxboundary);
 		} else {
+			gLoge("ShipController::update") << "Selected ship is not movable!";
+			selectedship = nullptr;
 		}
 	}
 }
@@ -117,5 +126,6 @@ void ShipController::draw() {
 		curPos -= curFrameSize * 0.5f;
 		animator->draw(curPos, curFrameSize, 30.0f);
 	}
-	ships->draw();
+	fixedships->draw();
+	movableships->draw();
 }

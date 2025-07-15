@@ -6,7 +6,7 @@
 #define PLATFORMCONTROLLER_H
 #include <string>
 #include <glm/glm.hpp>
-#include "datatypes/Object2D.h"
+#include "datatypes/Object2DNode.h"
 
 
 class PlatformController {
