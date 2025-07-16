@@ -25,11 +25,11 @@ PlatformController::~PlatformController() {
 	delete platforms;
 }
 
-void PlatformController::mouseLeftClick(const glm::vec2& clickedPos) {
+void PlatformController::mouseLeftRelease(const glm::vec2& clickedPos) {
 	selectedplatform = nullptr;
 	auto selectionIter = platforms->selectObject2D(clickedPos);
 	if (selectionIter != platforms->end()) {
-		gLogi("PlatformController::mouseLeftClick") << "Platform selected at position: " << clickedPos.x << ", " << clickedPos.y;
+		gLogi("PlatformController::mouseLeftRelease") << "Platform selected at position: " << clickedPos.x << ", " << clickedPos.y;
 		selectedplatform = *selectionIter;
 	}
 }

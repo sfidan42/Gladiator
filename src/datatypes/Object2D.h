@@ -11,25 +11,20 @@
 #include "datatypes/AnimatedFrames.h"
 
 enum class Type2D { INTERFACE, NODE, VECTOR };
-
 enum class Pos2D { FIXED, MOVING };
-
 enum class Tex2D { IMAGE, SPRITE };
+
+template <Pos2D>
+struct Position2DTraits;
+template <> struct Position2DTraits<Pos2D::FIXED> { using type = const glm::vec2; };
+template <> struct Position2DTraits<Pos2D::MOVING> { using type = glm::vec2; };
 
 template <Tex2D>
 struct Texture2DTraits;
+template <> struct Texture2DTraits<Tex2D::IMAGE> { using type = gImage; };
+template <> struct Texture2DTraits<Tex2D::SPRITE> { using type = AnimatedFrames; };
 
-template <>
-struct Texture2DTraits<Tex2D::IMAGE> {
-	using type = gImage;
-};
-
-template <>
-struct Texture2DTraits<Tex2D::SPRITE> {
-	using type = AnimatedFrames;
-};
-
-template <Type2D TY, Pos2D P, Tex2D TX>
+template <Type2D TP, Pos2D P, Tex2D TX>
 class Object2D;
 
 template <Pos2D P, Tex2D TX>
@@ -61,13 +56,17 @@ protected:
 template <Pos2D P, Tex2D TX>
 class Object2D<Type2D::NODE, P, TX> : public Object2D<Type2D::INTERFACE, P, TX> {
 	using TextureType = typename Texture2DTraits<TX>::type;
+	using PositionType = typename Position2DTraits<P>::type;
 public:
 	Object2D(TextureType* texture,
 	         const glm::vec2& targetPos, const glm::vec2& sourceSize,
 	         float targetSizeScale = 1.0f, float targetAngle = 0.0f);
 
-	template <Pos2D p = P, typename std::enable_if<p == Pos2D::MOVING, int>::type = 0>
-	Object2D(const Object2D<Type2D::NODE, Pos2D::FIXED, TX>& ship);
+	template <Type2D TP2, Pos2D P2>
+	Object2D(
+		const Object2D<TP2, P2, TX>& object,
+		std::enable_if_t<P == Pos2D::MOVING && (TP2 == Type2D::INTERFACE || TP2 == Type2D::NODE), int>* = nullptr
+	);
 
 	~Object2D();
 
@@ -77,10 +76,10 @@ public:
 	float getAngle() const { return angle; }
 	int getId() const { return id; }
 
-	template <Tex2D tx = TX, typename std::enable_if<tx == Tex2D::SPRITE, int>::type = 0>
+	template <Tex2D tx = TX, std::enable_if_t<tx == Tex2D::SPRITE, int> = 0>
 	void update(float deltaTime);
 
-	template <Pos2D p = P, typename std::enable_if<p == Pos2D::MOVING, int>::type = 0>
+	template <Pos2D p = P, std::enable_if_t<p == Pos2D::MOVING, int> = 0>
 	void move(const glm::vec2& stepSize, const glm::vec2& minBoundary, const glm::vec2& maxBoundary);
 
 	template <Pos2D P2, Tex2D T2>
@@ -96,8 +95,8 @@ private:
 	void drawImpl(std::integral_constant<Tex2D, Tex2D::SPRITE>);
 
 	int id;
-	glm::vec2 pos;
-	glm::vec2 size;
+	PositionType pos;
+	PositionType size;
 	float angle;
 
 	SpriteAnimator* animator;

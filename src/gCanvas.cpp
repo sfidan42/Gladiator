@@ -83,20 +83,20 @@ void gCanvas::mouseDragged(int x, int y, int button) {
 }
 
 void gCanvas::mousePressed(int x, int y, int button) {
+	//	gLogi("gCanvas") << "mousePressed" << ", x:" << x << ", y:" << y << ", button:" << button;
+}
+
+void gCanvas::mouseReleased(int x, int y, int button) {
 	switch(button) {
 	case GLFW_MOUSE_BUTTON_LEFT:
-		gamecontroller->mouseLeftClick(glm::vec2(x, y));
+		gamecontroller->mouseLeftRelease(glm::vec2(x, y));
 		break;
 	case GLFW_MOUSE_BUTTON_RIGHT:
-		gamecontroller->mouseRightClick(glm::vec2(x, y));
+		gamecontroller->mouseRightRelease(glm::vec2(x, y));
 		break;
 	default:
 		break;
 	}
-}
-
-void gCanvas::mouseReleased(int x, int y, int button) {
-	//	gLogi("gCanvas") << "mouseReleased" << ", x:" << x << ", y:" << y << ", button:" << button;
 }
 
 void gCanvas::mouseScrolled(int x, int y) {

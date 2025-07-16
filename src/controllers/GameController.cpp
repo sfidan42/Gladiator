@@ -16,15 +16,14 @@ GameController::~GameController() {
 	delete enemyplatformctrl;
 }
 
-void GameController::mouseLeftClick(const glm::vec2& clickedPos) {
+void GameController::mouseLeftRelease(const glm::vec2& clickedPos) {
 
 	auto* previouslySelectedShip = shipcontroller->getSelectedShip();
-	shipcontroller->mouseLeftClick(clickedPos);
-	auto* currentlySelectedShip = shipcontroller->getSelectedShip();
+	shipcontroller->mouseLeftRelease(clickedPos);
+	const auto* currentlySelectedShip = shipcontroller->getSelectedShip();
 
-	auto* previouslySelectedPlatform = playerplatformctrl->getSelectedPlatform();
-	playerplatformctrl->mouseLeftClick(clickedPos);
-	auto* currentlySelectedPlatform = playerplatformctrl->getSelectedPlatform();
+	playerplatformctrl->mouseLeftRelease(clickedPos);
+	const auto* currentlySelectedPlatform = playerplatformctrl->getSelectedPlatform();
 
 	if (previouslySelectedShip && currentlySelectedPlatform && !currentlySelectedShip) {
 		previouslySelectedShip->move(currentlySelectedPlatform);
@@ -32,6 +31,6 @@ void GameController::mouseLeftClick(const glm::vec2& clickedPos) {
 	}
 }
 
-void GameController::mouseRightClick(const glm::vec2& clickedPos) {
-	shipcontroller->mouseRightClick(clickedPos);
+void GameController::mouseRightRelease(const glm::vec2& clickedPos) {
+	shipcontroller->mouseRightRelease(clickedPos);
 }

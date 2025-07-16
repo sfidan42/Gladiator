@@ -6,14 +6,14 @@
 #define PLATFORMCONTROLLER_H
 #include <string>
 #include <glm/glm.hpp>
-#include "datatypes/Object2DNode.h"
+#include "datatypes/Object2D.h"
 
 
 class PlatformController {
 public:
 	PlatformController(const std::string& path, std::initializer_list<glm::vec2> positions, const glm::vec2& platformSize, float angle);
 	~PlatformController();
-	void mouseLeftClick(const glm::vec2& clickedPos);
+	void mouseLeftRelease(const glm::vec2& clickedPos);
 	void draw() const;
 
 	Object2D<Type2D::NODE, Pos2D::FIXED, Tex2D::IMAGE>* getSelectedPlatform() const {

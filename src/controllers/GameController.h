@@ -19,8 +19,8 @@ public:
 	void AReleased() { shipcontroller->AReleased(); }
 	void SReleased() { shipcontroller->SReleased(); }
 	void DReleased() { shipcontroller->DReleased(); }
-	void mouseLeftClick(const glm::vec2& clickedPos);
-	void mouseRightClick(const glm::vec2& clickedPos);
+	void mouseLeftRelease(const glm::vec2& clickedPos);
+	void mouseRightRelease(const glm::vec2& clickedPos);
 	void setup(float speedMul, const glm::vec2& minBoundary, const glm::vec2& maxBoundary) { shipcontroller->setup(speedMul, minBoundary, maxBoundary); }
 	void update(float deltaTime) { shipcontroller->update(deltaTime); }
 	void draw() { playerplatformctrl->draw(); enemyplatformctrl->draw(); shipcontroller->draw(); }

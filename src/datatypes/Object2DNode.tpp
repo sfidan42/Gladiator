@@ -1,5 +1,5 @@
 #pragma once
-#include "Object2DNode.h"
+#include "Object2D.h"
 
 template <Pos2D P, Tex2D TX>
 Object2D<Type2D::NODE, P, TX>::Object2D(typename Texture2DTraits<TX>::type* texture,
@@ -22,9 +22,12 @@ Object2D<Type2D::NODE, P, TX>::Object2D(typename Texture2DTraits<TX>::type* text
 		<< ", angle: " << angle;
 }
 
-template <Pos2D P, Tex2D TX>
-template <Pos2D p, std::enable_if_t<p == Pos2D::MOVING, int>>
-Object2D<Type2D::NODE, P, TX>::Object2D(const Object2D<Type2D::NODE, Pos2D::FIXED, TX>& object)
+template<Pos2D P, Tex2D TX>
+template<Type2D TP2, Pos2D P2>
+Object2D<Type2D::NODE, P, TX>::Object2D(
+	const Object2D<TP2, P2, TX>& object,
+	std::enable_if_t<P == Pos2D::MOVING && (TP2 == Type2D::INTERFACE || TP2 == Type2D::NODE), int>*
+)
 	: Object2D<Type2D::INTERFACE, P, TX>(object.getTexture()), angle(object.getAngle()) {
 	static int sid;
 	this->id = sid++;

@@ -39,13 +39,13 @@ ShipController::~ShipController() {
 	delete animator;
 }
 
-void ShipController::mouseLeftClick(const glm::vec2& clickedPos) {
+void ShipController::mouseLeftRelease(const glm::vec2& clickedPos) {
 	selectedship = nullptr;
 	// Try selecting a MOVING ship first
 	auto movableIt = movableships->selectObject2D(clickedPos);
 	if (movableIt != movableships->end()) {
 		selectedship = *movableIt;
-		gLogi("ShipController::mouseLeftClick")
+		gLogi("ShipController::mouseLeftRelease")
 			<< "Selected movable ship with id " << selectedship->getId()
 			<< " at position: " << clickedPos.x << ", " << clickedPos.y;
 		return;
@@ -53,18 +53,16 @@ void ShipController::mouseLeftClick(const glm::vec2& clickedPos) {
 	// If not found, check template (FIXED) ships
 	auto fixedIt = fixedships->selectObject2D(clickedPos);
 	if (fixedIt != fixedships->end()) {
-		Object2D<Type2D::INTERFACE, Pos2D::FIXED, Tex2D::SPRITE>* fixedShipBase = *fixedIt;
-		auto* fixedShip = dynamic_cast<Object2D<Type2D::NODE, Pos2D::FIXED, Tex2D::SPRITE>*>(fixedShipBase);
-		auto* movingShipCopy = new Object2D<Type2D::NODE, Pos2D::MOVING, Tex2D::SPRITE>(*fixedShip);
+		auto* movingShipCopy = new Object2D<Type2D::NODE, Pos2D::MOVING, Tex2D::SPRITE>(**fixedIt);
 		movableships->push_back(movingShipCopy);
 		selectedship = movingShipCopy;
-		gLogi("ShipController::mouseLeftClick")
+		gLogi("ShipController::mouseLeftRelease")
 			<< "Selected fixed ship with id " << selectedship->getId()
 			<< " at position: " << clickedPos.x << ", " << clickedPos.y;
 	}
 }
 
-void ShipController::mouseRightClick(const glm::vec2& clickedPos) {
+void ShipController::mouseRightRelease(const glm::vec2& clickedPos) {
 	auto movableIt = movableships->selectObject2D(clickedPos);
 	if(movableIt == movableships->end()) {
 		return;

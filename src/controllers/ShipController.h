@@ -13,7 +13,7 @@
 #include "gImage.h"
 #include "gFile.h"
 #include "animation/SpriteAnimator.h"
-#include "datatypes/Object2DNode.h"
+#include "datatypes/Object2D.h"
 
 
 class ShipController {
@@ -28,8 +28,8 @@ public:
 	void AReleased() { speed.x += 1.0f; }
 	void SReleased() { speed.y -= 1.0f; }
 	void DReleased() { speed.x -= 1.0f; }
-	void mouseLeftClick(const glm::vec2& clickedPos);
-	void mouseRightClick(const glm::vec2& clickedPos);
+	void mouseLeftRelease(const glm::vec2& clickedPos);
+	void mouseRightRelease(const glm::vec2& clickedPos);
 	void setup(float speedMul, const glm::vec2& minBoundary, const glm::vec2& maxBoundary);
 	void update(float deltaTime);
 	void draw();

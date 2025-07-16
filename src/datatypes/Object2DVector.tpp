@@ -49,11 +49,16 @@ void Object2D<Type2D::VECTOR, P, TX>::addObject2D(size_t textureIndex,
 template <Pos2D P, Tex2D TX>
 typename std::vector<Object2D<Type2D::INTERFACE, P, TX>*>::iterator
 Object2D<Type2D::VECTOR, P, TX>::selectObject2D(const glm::vec2& clickPos) {
+	auto selectedIt = children.end();
+	float minMargin = std::numeric_limits<float>::max();
 	for (auto it = children.begin(); it != children.end(); ++it) {
 		float marginLen;
 		if ((*it)->collision(marginLen, clickPos)) {
-			return it;
+			if (marginLen < minMargin) {
+				minMargin = marginLen;
+				selectedIt = it;
+			}
 		}
 	}
-	return children.end();
+	return selectedIt;
 }
