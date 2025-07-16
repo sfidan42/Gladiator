@@ -7,9 +7,7 @@
 
 #include "controllers/ShipController.h"
 
-ShipController::ShipController()
-	: speed(0.0f, 0.0f), speedmul(1.0f), selectedship(nullptr),
-	  minboundary(0.0f), maxboundary(0.0f) {
+ShipController::ShipController() {
 	fixedships = new Object2D<Type2D::VECTOR, Pos2D::FIXED, Tex2D::SPRITE>;
 	for(int i = 1; i <= 4; ++i) {
 		auto* texture = new AnimatedFrames();
@@ -25,10 +23,10 @@ ShipController::ShipController()
 		}
 		fixedships->addTexture(texture);
 	}
-	fixedships->addObject2D(0, {60, 20}, {0.0f, 0.0f}, 0.0f, {242, 239});
-	fixedships->addObject2D(1, {90, 310}, {0.0f, 0.0f}, 0.0f, {170, 193});
-	fixedships->addObject2D(2, {47, 557}, {0.0f, 0.0f},0.0f, {255, 250});
-	fixedships->addObject2D(3, {110, 900}, {0.0f, 0.0f}, 0.0f, {130, 97});
+	fixedships->addObject2D(0, {60, 20}, 0.0f, {242, 239});
+	fixedships->addObject2D(1, {90, 310}, 0.0f, {170, 193});
+	fixedships->addObject2D(2, {47, 557},0.0f, {255, 250});
+	fixedships->addObject2D(3, {110, 900}, 0.0f, {130, 97});
 	movableships = new Object2D<Type2D::VECTOR, Pos2D::MOVING, Tex2D::SPRITE>();
 	animator = new SpriteAnimator();
 	bullets = new Object2D<Type2D::VECTOR, Pos2D::MOVING, Tex2D::IMAGE>;
@@ -36,6 +34,22 @@ ShipController::ShipController()
 	if(!bulletframe.loadImage(bulletPath)) {
 		gLoge("ShipController::ShipController") << "Failed to load bullet frame from: " << bulletPath;
 	}
+
+	auto *animatedFrames = new AnimatedFrames();
+	const std::string& baseDir = gObject::gGetImagesDir();
+	for(int i = 1; ; i++) {
+		std::string path = "platform_anim/platform_" + gToStr(i) + ".png";
+		if(gFile::doesFileExist(baseDir + path)) {
+			auto* img = new gImage();
+			img->loadImage(path);
+			animatedFrames->frames.push_back(img);
+		} else {
+			break;
+		}
+	}
+	auto* selectionAnim = new SpriteAnimation(animatedFrames, 25);
+	animator->addAnimation(selectionAnim);
+	animator->changeAnimation(selectionAnim->getId());
 }
 
 ShipController::~ShipController() {
@@ -48,14 +62,14 @@ ShipController::~ShipController() {
 void ShipController::FPressed() {
 	if (selectedship) {
 		const float bulletDrawAngle = selectedship->getAngle();
-		const float bulletSpeedAngle = bulletDrawAngle + 90.0f; // The angle bullets travel
+		const float bulletSpeedAngle = bulletDrawAngle + 90.0f;
 
 		const glm::vec2 direction = glm::rotate(glm::vec2(1.0f, 0.0f), glm::radians(bulletSpeedAngle));
 
 		const glm::vec2 shipSize = selectedship->getSize();
 		const float shipRadius = glm::length(shipSize) * 0.5f;
 
-		const glm::vec2 bulletSpeed = direction * 100.0f; // Already rotated
+		const glm::vec2 bulletSpeed = direction * 10000.0f;
 		const glm::vec2 bulletFrameSize = glm::vec2(bulletframe.getWidth(), bulletframe.getHeight());
 
 		const glm::vec2 spawnPos = selectedship->getMidPosition() + direction * shipRadius - bulletFrameSize * 0.5f;
@@ -68,7 +82,12 @@ void ShipController::FPressed() {
 		gLogw("ShipController::FPressed") << "No ship selected to fire!";
 	}
 }
+
 void ShipController::mouseLeftRelease(const glm::vec2& clickedPos) {
+	if (selectedship) {
+		speed = selectedship->getSpeed();
+		selectedship->setSpeed(glm::vec2(0.0f, 0.0f));
+	}
 	selectedship = nullptr;
 	// Try selecting a MOVING ship first
 	auto movableIt = movableships->selectObject2D(clickedPos);
@@ -77,6 +96,10 @@ void ShipController::mouseLeftRelease(const glm::vec2& clickedPos) {
 		gLogi("ShipController::mouseLeftRelease")
 			<< "Selected movable ship with id " << selectedship->getId()
 			<< " at position: " << clickedPos.x << ", " << clickedPos.y;
+		speedptr = selectedship->getSpeedAddress();
+		*speedptr = speed;
+		gLogi("ShipController::mouseLeftRelease")
+			<< "speed set to: " << speed.x << ", " << speed.y;
 		return;
 	}
 	// If not found, check template (FIXED) ships
@@ -88,6 +111,10 @@ void ShipController::mouseLeftRelease(const glm::vec2& clickedPos) {
 		gLogi("ShipController::mouseLeftRelease")
 			<< "Selected fixed ship with id " << selectedship->getId()
 			<< " at position: " << clickedPos.x << ", " << clickedPos.y;
+		speedptr = selectedship->getSpeedAddress();
+		*speedptr = speed;
+		gLogi("ShipController::mouseLeftRelease")
+			<< "speed set to: " << speed.x << ", " << speed.y;
 	}
 }
 
@@ -105,25 +132,7 @@ void ShipController::mouseRightRelease(const glm::vec2& clickedPos) {
 	movableships->pop_back();
 }
 
-void ShipController::setup(const float speedMul, const glm::vec2& minBoundary, const glm::vec2& maxBoundary) {
-	this->speedmul = speedMul;
-	this->minboundary = minBoundary;
-	this->maxboundary = maxBoundary;
-	auto *animatedFrames = new AnimatedFrames();
-	const std::string& baseDir = gObject::gGetImagesDir();
-	for(int i = 1; ; i++) {
-		std::string path = "platform_anim/platform_" + gToStr(i) + ".png";
-		if(gFile::doesFileExist(baseDir + path)) {
-			auto* img = new gImage();
-			img->loadImage(path);
-			animatedFrames->frames.push_back(img);
-		} else {
-			break;
-		}
-	}
-	auto* selectionAnim = new SpriteAnimation(animatedFrames, 25);
-	animator->addAnimation(selectionAnim);
-	animator->changeAnimation(selectionAnim->getId());
+void ShipController::setup(const glm::vec2& minBoundary, const glm::vec2& maxBoundary) {
 	movableships->setup(minBoundary, maxBoundary);
 	bullets->setup(minBoundary, maxBoundary);
 }
@@ -131,16 +140,6 @@ void ShipController::setup(const float speedMul, const glm::vec2& minBoundary, c
 void ShipController::update(float deltaTime) {
 	movableships->update(deltaTime);
 	animator->update(deltaTime);
-	if(selectedship) {
-		auto* movableShip = selectedship->getMovable();
-		if(movableShip) {
-			glm::vec2 stepSize = speed * speedmul * deltaTime;
-			movableShip->move(stepSize, minboundary, maxboundary);
-		} else {
-			gLoge("ShipController::update") << "Selected ship is not movable!";
-			selectedship = nullptr;
-		}
-	}
 	bullets->update(deltaTime);
 }
 

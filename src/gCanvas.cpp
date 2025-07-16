@@ -28,7 +28,7 @@ void gCanvas::setup() {
 		renderer->getUnitWidth(),
 		renderer->getUnitHeight()
 	};
-	gamecontroller->setup(1000.0f, glm::vec2(0.0f), windowSize);
+	gamecontroller->setup(glm::vec2(0.0f), windowSize);
 }
 
 void gCanvas::update() {

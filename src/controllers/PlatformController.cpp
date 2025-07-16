@@ -16,7 +16,7 @@ PlatformController::PlatformController(const std::string& path, std::initializer
 			break;
 		}
 		platforms->addTexture(texture);
-		platforms->addObject2D(index, pos, {0.0f, 0.0f}, angle, platformSize, 1.0f);
+		platforms->addObject2D(index, pos, angle, platformSize, 1.0f);
 		index++;
 	}
 }

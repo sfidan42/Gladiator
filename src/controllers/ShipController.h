@@ -19,18 +19,18 @@ class ShipController {
 public:
 	ShipController();
 	~ShipController();
-	void WPressed() { speed.y -= 1.0f; }
-	void APressed() { speed.x -= 1.0f; }
-	void SPressed() { speed.y += 1.0f; }
-	void DPressed() { speed.x += 1.0f; }
+	void WPressed() { speedptr->y -= 1000.0f; }
+	void APressed() { speedptr->x -= 1000.0f; }
+	void SPressed() { speedptr->y += 1000.0f; }
+	void DPressed() { speedptr->x += 1000.0f; }
 	void FPressed();
-	void WReleased() { speed.y += 1.0f; }
-	void AReleased() { speed.x += 1.0f; }
-	void SReleased() { speed.y -= 1.0f; }
-	void DReleased() { speed.x -= 1.0f; }
+	void WReleased() { speedptr->y += 1000.0f; }
+	void AReleased() { speedptr->x += 1000.0f; }
+	void SReleased() { speedptr->y -= 1000.0f; }
+	void DReleased() { speedptr->x -= 1000.0f; }
 	void mouseLeftRelease(const glm::vec2& clickedPos);
 	void mouseRightRelease(const glm::vec2& clickedPos);
-	void setup(float speedMul, const glm::vec2& minBoundary, const glm::vec2& maxBoundary);
+	void setup(const glm::vec2& minBoundary, const glm::vec2& maxBoundary);
 	void update(float deltaTime);
 	void draw() const;
 
@@ -39,19 +39,17 @@ public:
 	}
 
 private:
-	glm::vec2 speed;
-	float speedmul;
+	glm::vec2 speed = glm::vec2(0.0f);
+	glm::vec2* speedptr = &speed;
 
-	Object2D<Type2D::VECTOR, Pos2D::FIXED, Tex2D::SPRITE>* fixedships;
-	Object2D<Type2D::VECTOR, Pos2D::MOVING, Tex2D::SPRITE>* movableships;
-	Object2D<Type2D::INTERFACE, Pos2D::MOVING, Tex2D::SPRITE>* selectedship;
+	Object2D<Type2D::VECTOR, Pos2D::FIXED, Tex2D::SPRITE>* fixedships = nullptr;
+	Object2D<Type2D::VECTOR, Pos2D::MOVING, Tex2D::SPRITE>* movableships = nullptr;
+	Object2D<Type2D::INTERFACE, Pos2D::MOVING, Tex2D::SPRITE>* selectedship = nullptr;
 
 	Object2D<Type2D::VECTOR, Pos2D::MOVING, Tex2D::IMAGE>* bullets;
 	gImage bulletframe;
 
-	glm::vec2 minboundary;
-	glm::vec2 maxboundary;
-	SpriteAnimator *animator;
+	SpriteAnimator *animator = nullptr;
 };
 
 #endif /* SRC_CONTROLLERS_SHIPCONTROLLER_H_ */

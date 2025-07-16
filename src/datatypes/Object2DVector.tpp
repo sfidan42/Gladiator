@@ -18,15 +18,17 @@ Object2D<Type2D::VECTOR, P, TX>::~Object2D() {
 }
 
 template <Pos2D P, Tex2D TX>
+template <Pos2D p, std::enable_if_t<p == Pos2D::MOVING, int>>
 void Object2D<Type2D::VECTOR, P, TX>::setup(const glm::vec2& minBoundary, const glm::vec2& maxBoundary) {
 	minboundary = minBoundary;
 	maxboundary = maxBoundary;
 	gLogi("Object2D<Type2D::VECTOR, P, TX>::setup")
-		<< ", Min boundary: " << minboundary.x << ", " << minboundary.y
-		<< ", Max boundary: " << maxboundary.x << ", " << maxboundary.y;
+		<< "Min boundary: " << minboundary.x << ", " << minboundary.y << " | "
+		<< "Max boundary: " << maxboundary.x << ", " << maxboundary.y;
 }
 
 template <Pos2D P, Tex2D TX>
+template <Pos2D p, Tex2D tx, std::enable_if_t<p == Pos2D::MOVING || tx == Tex2D::SPRITE, int>>
 void Object2D<Type2D::VECTOR, P, TX>::update(float deltaTime) {
 	for(auto* child : children) {
 		auto* animatedChild = child->getAnimated();
@@ -55,6 +57,21 @@ void Object2D<Type2D::VECTOR, P, TX>::addTexture(typename Texture2DTraits<TX>::t
 }
 
 template <Pos2D P, Tex2D TX>
+template <Pos2D p, typename std::enable_if<p == Pos2D::FIXED, int>::type>
+void Object2D<Type2D::VECTOR, P, TX>::addObject2D(size_t textureIndex, const glm::vec2& pos,
+	float angle, const glm::vec2& size, float scale) {
+	using TextureType = typename Texture2DTraits<TX>::type;
+	if (textureIndex >= texturelist.size()) {
+		gLoge("Object2D<Type2D::VECTOR, P, TX>::addObject2D") << "Index out of bounds: " << textureIndex;
+		return;
+	}
+	TextureType* texture = texturelist[textureIndex];
+	auto* child = new Object2D<Type2D::NODE, P, TX>(texture, pos, angle, size, scale);
+	children.push_back(child);
+}
+
+template <Pos2D P, Tex2D TX>
+template <Pos2D p, typename std::enable_if<p == Pos2D::MOVING, int>::type>
 void Object2D<Type2D::VECTOR, P, TX>::addObject2D(size_t textureIndex, const glm::vec2& pos,
 	const glm::vec2& speed, float angle, const glm::vec2& size, float scale) {
 	using TextureType = typename Texture2DTraits<TX>::type;
