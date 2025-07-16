@@ -28,12 +28,11 @@ void gCanvas::setup() {
 		renderer->getUnitWidth(),
 		renderer->getUnitHeight()
 	};
-	windowSize.x *= 0.5f;
 	gamecontroller->setup(1000.0f, glm::vec2(0.0f), windowSize);
 }
 
 void gCanvas::update() {
-	float deltaTime = appmanager->getElapsedTime();
+	const float deltaTime = appmanager->getElapsedTime();
 	gamecontroller->update(deltaTime);
 }
 
@@ -51,6 +50,8 @@ void gCanvas::keyPressed(int key) {
 	case G_KEY_S: gamecontroller->SPressed();
 		break;
 	case G_KEY_D: gamecontroller->DPressed();
+		break;
+	case G_KEY_F: gamecontroller->FPressed();
 		break;
 	default: break;
 	}

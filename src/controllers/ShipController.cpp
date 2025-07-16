@@ -8,8 +8,8 @@
 #include "controllers/ShipController.h"
 
 ShipController::ShipController()
-	: speed(0.0f, 0.0f), speedmul(1000.0f), selectedship(nullptr),
-	  minboundary(0.0f, 0.0f), maxboundary(200.0f, 150.0f) {
+	: speed(0.0f, 0.0f), speedmul(1.0f), selectedship(nullptr),
+	  minboundary(0.0f), maxboundary(0.0f) {
 	fixedships = new Object2D<Type2D::VECTOR, Pos2D::FIXED, Tex2D::SPRITE>;
 	for(int i = 1; i <= 4; ++i) {
 		auto* texture = new AnimatedFrames();
@@ -25,20 +25,49 @@ ShipController::ShipController()
 		}
 		fixedships->addTexture(texture);
 	}
-	fixedships->addObject2D(0, {60, 20}, {242, 239});
-	fixedships->addObject2D(1, {90, 310}, {170, 193});
-	fixedships->addObject2D(2, {47, 557}, {255, 250});
-	fixedships->addObject2D(3, {110, 900}, {130, 97});
-	movableships = new Object2D<Type2D::VECTOR, Pos2D::MOVING, Tex2D::SPRITE>;
+	fixedships->addObject2D(0, {60, 20}, {0.0f, 0.0f}, 0.0f, {242, 239});
+	fixedships->addObject2D(1, {90, 310}, {0.0f, 0.0f}, 0.0f, {170, 193});
+	fixedships->addObject2D(2, {47, 557}, {0.0f, 0.0f},0.0f, {255, 250});
+	fixedships->addObject2D(3, {110, 900}, {0.0f, 0.0f}, 0.0f, {130, 97});
+	movableships = new Object2D<Type2D::VECTOR, Pos2D::MOVING, Tex2D::SPRITE>();
 	animator = new SpriteAnimator();
+	bullets = new Object2D<Type2D::VECTOR, Pos2D::MOVING, Tex2D::IMAGE>;
+	const std::string bulletPath = "oyuncu_bullet_1_04.png";
+	if(!bulletframe.loadImage(bulletPath)) {
+		gLoge("ShipController::ShipController") << "Failed to load bullet frame from: " << bulletPath;
+	}
 }
 
 ShipController::~ShipController() {
 	delete fixedships;
 	delete movableships;
 	delete animator;
+	delete bullets;
 }
 
+void ShipController::FPressed() {
+	if (selectedship) {
+		const float bulletDrawAngle = selectedship->getAngle();
+		const float bulletSpeedAngle = bulletDrawAngle + 90.0f; // The angle bullets travel
+
+		const glm::vec2 direction = glm::rotate(glm::vec2(1.0f, 0.0f), glm::radians(bulletSpeedAngle));
+
+		const glm::vec2 shipSize = selectedship->getSize();
+		const float shipRadius = glm::length(shipSize) * 0.5f;
+
+		const glm::vec2 bulletSpeed = direction * 100.0f; // Already rotated
+		const glm::vec2 bulletFrameSize = glm::vec2(bulletframe.getWidth(), bulletframe.getHeight());
+
+		const glm::vec2 spawnPos = selectedship->getMidPosition() + direction * shipRadius - bulletFrameSize * 0.5f;
+
+		const glm::vec2 bulletSize = bulletFrameSize;
+
+		auto* newBullet = new Object2D<Type2D::NODE, Pos2D::MOVING, Tex2D::IMAGE>(&bulletframe, spawnPos, bulletSpeed, bulletDrawAngle, bulletSize);
+		bullets->push_back(newBullet);
+	} else {
+		gLogw("ShipController::FPressed") << "No ship selected to fire!";
+	}
+}
 void ShipController::mouseLeftRelease(const glm::vec2& clickedPos) {
 	selectedship = nullptr;
 	// Try selecting a MOVING ship first
@@ -95,6 +124,8 @@ void ShipController::setup(const float speedMul, const glm::vec2& minBoundary, c
 	auto* selectionAnim = new SpriteAnimation(animatedFrames, 25);
 	animator->addAnimation(selectionAnim);
 	animator->changeAnimation(selectionAnim->getId());
+	movableships->setup(minBoundary, maxBoundary);
+	bullets->setup(minBoundary, maxBoundary);
 }
 
 void ShipController::update(float deltaTime) {
@@ -110,9 +141,10 @@ void ShipController::update(float deltaTime) {
 			selectedship = nullptr;
 		}
 	}
+	bullets->update(deltaTime);
 }
 
-void ShipController::draw() {
+void ShipController::draw() const {
 	if(selectedship) {
 		const gImage* curFrame = animator->getCurrentFrame();
 		glm::vec2 curPos = selectedship->getMidPosition();
@@ -125,4 +157,5 @@ void ShipController::draw() {
 	}
 	fixedships->draw();
 	movableships->draw();
+	bullets->draw();
 }

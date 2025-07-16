@@ -18,12 +18,12 @@ GameController::~GameController() {
 
 void GameController::mouseLeftRelease(const glm::vec2& clickedPos) {
 
+	playerplatformctrl->mouseLeftRelease(clickedPos);
+	const auto* currentlySelectedPlatform = playerplatformctrl->getSelectedPlatform();
+
 	auto* previouslySelectedShip = shipcontroller->getSelectedShip();
 	shipcontroller->mouseLeftRelease(clickedPos);
 	const auto* currentlySelectedShip = shipcontroller->getSelectedShip();
-
-	playerplatformctrl->mouseLeftRelease(clickedPos);
-	const auto* currentlySelectedPlatform = playerplatformctrl->getSelectedPlatform();
 
 	if (previouslySelectedShip && currentlySelectedPlatform && !currentlySelectedShip) {
 		previouslySelectedShip->move(currentlySelectedPlatform);

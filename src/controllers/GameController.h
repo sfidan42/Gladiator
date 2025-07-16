@@ -15,6 +15,7 @@ public:
 	void APressed() { shipcontroller->APressed(); }
 	void SPressed() { shipcontroller->SPressed(); }
 	void DPressed() { shipcontroller->DPressed(); }
+	void FPressed() { shipcontroller->FPressed(); }
 	void WReleased() { shipcontroller->WReleased(); }
 	void AReleased() { shipcontroller->AReleased(); }
 	void SReleased() { shipcontroller->SReleased(); }

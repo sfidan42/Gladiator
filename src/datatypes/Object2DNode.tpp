@@ -3,8 +3,8 @@
 
 template <Pos2D P, Tex2D TX>
 Object2D<Type2D::NODE, P, TX>::Object2D(typename Texture2DTraits<TX>::type* texture,
-	const glm::vec2& targetPos, const glm::vec2& sourceSize, float targetSizeScale, float targetAngle)
-    : Object2D<Type2D::INTERFACE, P, TX>(texture), pos(targetPos), size(sourceSize * targetSizeScale), angle(targetAngle) {
+	const glm::vec2& _pos, glm::vec2 _speed, float _angle, const glm::vec2& _size, float _scale)
+    : Object2D<Type2D::INTERFACE, P, TX>(texture), pos(_pos), size(_size * _scale), angle(_angle), speed(_speed) {
 	static int sid;
 	this->id = sid++;
 	if (TX == Tex2D::IMAGE) {
@@ -31,8 +31,7 @@ Object2D<Type2D::NODE, P, TX>::Object2D(
 	: Object2D<Type2D::INTERFACE, P, TX>(object.getTexture()), angle(object.getAngle()) {
 	static int sid;
 	this->id = sid++;
-	this->size = object.getSize();
-	this->pos = object.getPosition();
+	this->shape = object.getShape();
 	this->animator = new SpriteAnimator();
 	auto* anim = new SpriteAnimation(Object2D<Type2D::INTERFACE, P, TX>::texture);
 	this->animator->addAnimation(anim);
