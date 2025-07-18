@@ -10,7 +10,8 @@
 
 #include "gBaseCanvas.h"
 #include "gApp.h"
-#include <gImage.h>
+#include "gImage.h"
+#include "gGUITextbox.h"
 #include <GLFW/glfw3.h>
 #include "controllers/GameController.h"
 
@@ -42,6 +43,7 @@ private:
 	gApp* root;
 	gImage background;
 	GameController *gamecontroller;
+	gGUITextbox textbox;
 };
 
 #endif /* GCANVAS_H_ */

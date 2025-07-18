@@ -48,13 +48,15 @@ void SpriteAnimator::update(float deltaTime) {
 	currentanim->update(deltaTime);
 }
 
-void SpriteAnimator::draw(int x, int y) {
+void SpriteAnimator::draw(int x, int y, float angle) {
 	if(!currentanim) {
 		return;
 	}
 	gImage* currentframe = currentanim->getCurrentFrame();
 	if(currentframe) {
-		currentframe->draw(x, y);
+		int w = currentframe->getWidth();
+		int h = currentframe->getHeight();
+		currentframe->draw(x, y, w, h, angle);
 	}
 }
 
@@ -69,11 +71,23 @@ void SpriteAnimator::draw(int x, int y, int w, int h, float angle) {
 }
 
 void SpriteAnimator::draw(const glm::vec2& pos) {
-	this->draw(pos.x, pos.y);
+	if(!currentanim) {
+		return;
+	}
+	gImage* currentframe = currentanim->getCurrentFrame();
+	if(currentframe) {
+		currentframe->draw(pos.x, pos.y);
+	}
 }
 
 void SpriteAnimator::draw(const glm::vec2& pos, const glm::vec2& size, float angle) {
-	this->draw(pos.x, pos.y, size.x, size.y, angle);
+	if(!currentanim) {
+		return;
+	}
+	gImage* currentframe = currentanim->getCurrentFrame();
+	if(currentframe) {
+		currentframe->draw(pos.x, pos.y, size.x, size.y, angle);
+	}
 }
 
 const gImage* SpriteAnimator::getCurrentFrame() const {

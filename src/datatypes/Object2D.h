@@ -11,18 +11,38 @@
 #include "datatypes/AnimatedFrames.h"
 
 enum class Type2D { INTERFACE, NODE, VECTOR };
+
 enum class Pos2D { FIXED, MOVING };
+
 enum class Tex2D { IMAGE, SPRITE };
 
 template <Pos2D>
 struct Position2DTraits;
-template <> struct Position2DTraits<Pos2D::FIXED> { using type2d = const glm::vec2; using type4d = const glm::vec4; };
-template <> struct Position2DTraits<Pos2D::MOVING> { using type2d = glm::vec2; using type4d = glm::vec4; };
+
+template <>
+struct Position2DTraits<Pos2D::FIXED> {
+	using type2d = const glm::vec2;
+	using type4d = const glm::vec4;
+};
+
+template <>
+struct Position2DTraits<Pos2D::MOVING> {
+	using type2d = glm::vec2;
+	using type4d = glm::vec4;
+};
 
 template <Tex2D>
 struct Texture2DTraits;
-template <> struct Texture2DTraits<Tex2D::IMAGE> { using type = gImage; };
-template <> struct Texture2DTraits<Tex2D::SPRITE> { using type = AnimatedFrames; };
+
+template <>
+struct Texture2DTraits<Tex2D::IMAGE> {
+	using type = gImage;
+};
+
+template <>
+struct Texture2DTraits<Tex2D::SPRITE> {
+	using type = AnimatedFrames;
+};
 
 template <Type2D TP, Pos2D P, Tex2D TX>
 class Object2D;
@@ -30,13 +50,14 @@ class Object2D;
 template <Pos2D P, Tex2D TX>
 class Object2D<Type2D::INTERFACE, P, TX> {
 	using TextureType = typename Texture2DTraits<TX>::type;
+
 public:
 	Object2D(TextureType* _texture);
 	virtual ~Object2D() = default;
 	virtual glm::vec2 getPosition() const = 0;
 	virtual glm::vec2 getMidPosition() const = 0;
 	virtual glm::vec2 getSize() const = 0;
-	virtual glm::vec4 getShape() const = 0;
+	virtual glm::vec4 getRect() const = 0;
 	virtual float getAngle() const = 0;
 	virtual int getId() const = 0;
 	virtual void draw() = 0;
@@ -50,6 +71,8 @@ public:
 	TextureType* getTexture() const { return texture; }
 
 	bool collision(float& outMarginLen, const glm::vec2& clickPos) const;
+	bool collision(const glm::vec4& rect);
+	bool collision(const glm::vec2& minBoundary, const glm::vec2& maxBoundary);
 
 protected:
 	TextureType* texture;
@@ -62,15 +85,15 @@ class Object2D<Type2D::NODE, P, TX> : public Object2D<Type2D::INTERFACE, P, TX> 
 	using TextureType = typename Texture2DTraits<TX>::type;
 	using Position2DType = typename Position2DTraits<P>::type2d;
 	using Position4DType = typename Position2DTraits<P>::type4d;
+
 public:
-
-	template <Pos2D p = P, std::enable_if_t<p == Pos2D::FIXED, int> = 0>
+	template <Pos2D p = P, std::enable_if_t<p == Pos2D::FIXED, int>  = 0>
 	Object2D(TextureType* texture, const glm::vec2& _pos,
-		float _angle, const glm::vec2& _size, float _scale = 1.0f);
+	         float _angle, const glm::vec2& _size, float _scale = 1.0f);
 
-	template <Pos2D p = P, std::enable_if_t<p == Pos2D::MOVING, int> = 0>
+	template <Pos2D p = P, std::enable_if_t<p == Pos2D::MOVING, int>  = 0>
 	Object2D(TextureType* texture, const glm::vec2& _pos, const glm::vec2& _speed,
-		float _angle, const glm::vec2& _size, float _scale = 1.0f);
+	         float _angle, const glm::vec2& _size, float _scale = 1.0f);
 
 	template <Type2D TP2, Pos2D P2>
 	explicit Object2D(
@@ -83,14 +106,14 @@ public:
 	glm::vec2 getPosition() const { return pos; }
 	glm::vec2 getMidPosition() const { return pos + size * 0.5f; }
 	glm::vec2 getSize() const { return size; }
-	glm::vec4 getShape() const { return shape; }
+	glm::vec4 getRect() const { return rect; }
 	float getAngle() const { return angle; }
 	int getId() const { return id; }
 	void setSpeed(const glm::vec2& speed) { this->speed = speed; }
 	glm::vec2 getSpeed() const { return speed; }
-	glm::vec2 *getSpeedAddress() { return &speed; }
+	glm::vec2* getSpeedAddress() { return &speed; }
 
-	template <Pos2D p = P, std::enable_if_t<p == Pos2D::MOVING, int> = 0>
+	template <Pos2D p = P, std::enable_if_t<p == Pos2D::MOVING, int>  = 0>
 	void move(const glm::vec2& stepSize, const glm::vec2& minBoundary, const glm::vec2& maxBoundary);
 
 	template <Pos2D P2, Tex2D T2>
@@ -98,10 +121,10 @@ public:
 
 	void rotate(float angle);
 
-	template <Tex2D tx = TX, std::enable_if_t<tx == Tex2D::SPRITE, int> = 0>
+	template <Tex2D tx = TX, std::enable_if_t<tx == Tex2D::SPRITE, int>  = 0>
 	void update(float deltaTime);
 
-	template <Pos2D p = P, std::enable_if_t<p == Pos2D::MOVING, int> = 0>
+	template <Pos2D p = P, std::enable_if_t<p == Pos2D::MOVING, int>  = 0>
 	void update(float deltaTime, const glm::vec2& minBoundary, const glm::vec2& maxBoundary);
 
 	void draw();
@@ -111,13 +134,16 @@ private:
 	void drawImpl(std::integral_constant<Tex2D, Tex2D::SPRITE>);
 
 	int id;
+
 	union {
-		Position4DType shape;
+		Position4DType rect;
+
 		struct {
 			Position2DType pos;
 			Position2DType size;
 		};
 	};
+
 	float angle;
 	glm::vec2 speed = glm::vec2(0.0f);
 
@@ -129,27 +155,28 @@ private:
 template <Pos2D P, Tex2D TX>
 class Object2D<Type2D::VECTOR, P, TX> {
 	using TextureType = typename Texture2DTraits<TX>::type;
+
 public:
 	Object2D();
 	virtual ~Object2D();
 
-	template <Pos2D p = P, std::enable_if_t<p == Pos2D::MOVING, int> = 0>
-	void setup(const glm::vec2& minBoundary, const glm::vec2& maxBoundary);
+	template <Pos2D p = P, std::enable_if_t<p == Pos2D::MOVING, int>  = 0>
+	void setup(const glm::vec2& minBoundary, const glm::vec2& maxBoundary, bool dieInBorder = false);
 
-	template <Pos2D p = P, Tex2D tx = TX, std::enable_if_t<p == Pos2D::MOVING || tx == Tex2D::SPRITE, int> = 0>
+	template <Pos2D p = P, Tex2D tx = TX, std::enable_if_t<p == Pos2D::MOVING || tx == Tex2D::SPRITE, int>  = 0>
 	void update(float deltaTime);
 
 	void draw() const;
 
 	void addTexture(TextureType* texture);
 
-	template <Pos2D p = P, std::enable_if_t<p == Pos2D::FIXED, int> = 0>
+	template <Pos2D p = P, std::enable_if_t<p == Pos2D::FIXED, int>  = 0>
 	void addObject2D(size_t textureIndex, const glm::vec2& pos,
-		float angle, const glm::vec2& size, float scale = 1.0f);
+	                 float angle, const glm::vec2& size, float scale = 1.0f);
 
-	template <Pos2D p = P, std::enable_if_t<p == Pos2D::MOVING, int> = 0>
+	template <Pos2D p = P, std::enable_if_t<p == Pos2D::MOVING, int>  = 0>
 	void addObject2D(size_t textureIndex, const glm::vec2& pos, const glm::vec2& speed,
-		float angle, const glm::vec2& size, float scale = 1.0f);
+	                 float angle, const glm::vec2& size, float scale = 1.0f);
 
 	using it = typename std::vector<Object2D<Type2D::INTERFACE, P, TX>*>::iterator;
 	it begin() { return children.begin(); }
@@ -158,12 +185,14 @@ public:
 	Object2D<Type2D::INTERFACE, P, TX>* front() { return children.front(); }
 	void push_back(Object2D<Type2D::INTERFACE, P, TX>* obj) { children.push_back(obj); }
 	void pop_back() { children.pop_back(); }
+	size_t size() const { return children.size(); }
 
 	it selectObject2D(const glm::vec2& clickPos);
 
 private:
 	glm::vec2 minboundary;
 	glm::vec2 maxboundary;
+	bool dieinborder = false;
 
 	std::vector<Object2D<Type2D::INTERFACE, P, TX>*> children;
 	std::vector<TextureType*> texturelist;

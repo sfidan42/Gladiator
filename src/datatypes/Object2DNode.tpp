@@ -42,7 +42,8 @@ Object2D<Type2D::NODE, P, TX>::Object2D(typename Texture2DTraits<TX>::type* text
 		<< "Created Object2D with id: " << this->id
 		<< ", pos: " << pos.x << ", " << pos.y
 		<< ", size: " << size.x << ", " << size.y
-		<< ", angle: " << angle;
+		<< ", draw angle: " << angle
+		<< ", speed: " << speed.x << ", " << speed.y;
 }
 
 template<Pos2D P, Tex2D TX>
@@ -54,7 +55,7 @@ Object2D<Type2D::NODE, P, TX>::Object2D(
 	: Object2D<Type2D::INTERFACE, P, TX>(object.getTexture()), angle(object.getAngle()) {
 	static int sid;
 	this->id = sid++;
-	this->shape = object.getShape();
+	this->rect = object.getRect();
 	this->animator = new SpriteAnimator();
 	auto* anim = new SpriteAnimation(Object2D<Type2D::INTERFACE, P, TX>::texture);
 	this->animator->addAnimation(anim);
@@ -62,7 +63,8 @@ Object2D<Type2D::NODE, P, TX>::Object2D(
 		<< "Copied Object2D with id: " << id
 		<< ", pos: " << pos.x << ", " << pos.y
 		<< ", size: " << size.x << ", " << size.y
-		<< ", angle: " << angle;
+		<< ", angle: " << angle
+		<< ", speed: " << speed.x << ", " << speed.y;
 }
 
 template <Pos2D P, Tex2D TX>

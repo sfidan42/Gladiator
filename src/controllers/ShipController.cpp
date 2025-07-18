@@ -34,7 +34,6 @@ ShipController::ShipController() {
 	if(!bulletframe.loadImage(bulletPath)) {
 		gLoge("ShipController::ShipController") << "Failed to load bullet frame from: " << bulletPath;
 	}
-
 	auto *animatedFrames = new AnimatedFrames();
 	const std::string& baseDir = gObject::gGetImagesDir();
 	for(int i = 1; ; i++) {
@@ -69,7 +68,7 @@ void ShipController::FPressed() {
 		const glm::vec2 shipSize = selectedship->getSize();
 		const float shipRadius = glm::length(shipSize) * 0.5f;
 
-		const glm::vec2 bulletSpeed = direction * 10000.0f;
+		const glm::vec2 bulletSpeed = direction * 1000.0f;
 		const glm::vec2 bulletFrameSize = glm::vec2(bulletframe.getWidth(), bulletframe.getHeight());
 
 		const glm::vec2 spawnPos = selectedship->getMidPosition() + direction * shipRadius - bulletFrameSize * 0.5f;
@@ -78,6 +77,33 @@ void ShipController::FPressed() {
 
 		auto* newBullet = new Object2D<Type2D::NODE, Pos2D::MOVING, Tex2D::IMAGE>(&bulletframe, spawnPos, bulletSpeed, bulletDrawAngle, bulletSize);
 		bullets->push_back(newBullet);
+	} else {
+		gLogw("ShipController::FPressed") << "No ship selected to fire!";
+	}
+}
+
+void ShipController::GPressed() {
+	if (selectedship) {
+		for (int i = 0; i < 10000; ++i) {
+			const float bulletDrawAngle = selectedship->getAngle();
+			const float bulletSpeedAngle = bulletDrawAngle + 90.0f;
+
+			const glm::vec2 direction = glm::rotate(glm::vec2(1.0f, 0.0f), glm::radians(bulletSpeedAngle));
+
+			const glm::vec2 shipSize = selectedship->getSize();
+			const float shipRadius = glm::length(shipSize) * 0.5f;
+
+			const glm::vec2 bulletSpeed = direction * 100.0f;
+			const glm::vec2 bulletFrameSize = glm::vec2(bulletframe.getWidth(), bulletframe.getHeight());
+
+			glm::vec2 spawnPos = selectedship->getMidPosition() + direction * shipRadius - bulletFrameSize * 0.5f;
+			spawnPos += glm::gaussRand(glm::vec2(0.0f), glm::vec2(10.0f)); // Add some random offset
+
+			const glm::vec2 bulletSize = bulletFrameSize;
+
+			auto* newBullet = new Object2D<Type2D::NODE, Pos2D::MOVING, Tex2D::IMAGE>(&bulletframe, spawnPos, bulletSpeed, bulletDrawAngle, bulletSize);
+			bullets->push_back(newBullet);
+		}
 	} else {
 		gLogw("ShipController::FPressed") << "No ship selected to fire!";
 	}
@@ -98,8 +124,6 @@ void ShipController::mouseLeftRelease(const glm::vec2& clickedPos) {
 			<< " at position: " << clickedPos.x << ", " << clickedPos.y;
 		speedptr = selectedship->getSpeedAddress();
 		*speedptr = speed;
-		gLogi("ShipController::mouseLeftRelease")
-			<< "speed set to: " << speed.x << ", " << speed.y;
 		return;
 	}
 	// If not found, check template (FIXED) ships
@@ -113,8 +137,6 @@ void ShipController::mouseLeftRelease(const glm::vec2& clickedPos) {
 			<< " at position: " << clickedPos.x << ", " << clickedPos.y;
 		speedptr = selectedship->getSpeedAddress();
 		*speedptr = speed;
-		gLogi("ShipController::mouseLeftRelease")
-			<< "speed set to: " << speed.x << ", " << speed.y;
 	}
 }
 
@@ -133,8 +155,8 @@ void ShipController::mouseRightRelease(const glm::vec2& clickedPos) {
 }
 
 void ShipController::setup(const glm::vec2& minBoundary, const glm::vec2& maxBoundary) {
-	movableships->setup(minBoundary, maxBoundary);
-	bullets->setup(minBoundary, maxBoundary);
+	movableships->setup(minBoundary, maxBoundary); // Ships don't die in border, dieInBorder is left false
+	bullets->setup(minBoundary, maxBoundary, true); // Bullets die in border
 }
 
 void ShipController::update(float deltaTime) {
@@ -154,7 +176,7 @@ void ShipController::draw() const {
 		curPos -= curFrameSize * 0.5f;
 		animator->draw(curPos, curFrameSize, 30.0f);
 	}
+	bullets->draw();
 	fixedships->draw();
 	movableships->draw();
-	bullets->draw();
 }

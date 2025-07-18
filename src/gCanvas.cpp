@@ -28,17 +28,23 @@ void gCanvas::setup() {
 		renderer->getUnitWidth(),
 		renderer->getUnitHeight()
 	};
+	appmanager->setTargetFramerate(165);
+	appmanager->enableVsync();
 	gamecontroller->setup(glm::vec2(0.0f), windowSize);
+	textbox.set(root, nullptr, nullptr,
+		0, 0, 1000, 0, 800, 0);
 }
 
 void gCanvas::update() {
 	const float deltaTime = appmanager->getElapsedTime();
 	gamecontroller->update(deltaTime);
+	textbox.setText(gamecontroller->getLogMessages() + ", fps: " + gToStr(1.0f / deltaTime));
 }
 
 void gCanvas::draw() {
 	background.draw(0, 0);
 	gamecontroller->draw();
+	textbox.draw();
 }
 
 void gCanvas::keyPressed(int key) {
@@ -52,6 +58,8 @@ void gCanvas::keyPressed(int key) {
 	case G_KEY_D: gamecontroller->DPressed();
 		break;
 	case G_KEY_F: gamecontroller->FPressed();
+		break;
+	case G_KEY_G: gamecontroller->GPressed();
 		break;
 	default: break;
 	}

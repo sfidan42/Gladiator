@@ -19,7 +19,8 @@ Object2D<Type2D::VECTOR, P, TX>::~Object2D() {
 
 template <Pos2D P, Tex2D TX>
 template <Pos2D p, std::enable_if_t<p == Pos2D::MOVING, int>>
-void Object2D<Type2D::VECTOR, P, TX>::setup(const glm::vec2& minBoundary, const glm::vec2& maxBoundary) {
+void Object2D<Type2D::VECTOR, P, TX>::setup(const glm::vec2& minBoundary, const glm::vec2& maxBoundary, bool dieInBorder) {
+	dieinborder = dieInBorder;
 	minboundary = minBoundary;
 	maxboundary = maxBoundary;
 	gLogi("Object2D<Type2D::VECTOR, P, TX>::setup")
@@ -30,7 +31,8 @@ void Object2D<Type2D::VECTOR, P, TX>::setup(const glm::vec2& minBoundary, const 
 template <Pos2D P, Tex2D TX>
 template <Pos2D p, Tex2D tx, std::enable_if_t<p == Pos2D::MOVING || tx == Tex2D::SPRITE, int>>
 void Object2D<Type2D::VECTOR, P, TX>::update(float deltaTime) {
-	for(auto* child : children) {
+	for(auto it = children.begin(); it != children.end(); it++) {
+		auto* child = *it;
 		auto* animatedChild = child->getAnimated();
 		if(animatedChild) {
 			animatedChild->update(deltaTime);
@@ -38,7 +40,15 @@ void Object2D<Type2D::VECTOR, P, TX>::update(float deltaTime) {
 		auto* movableChild = child->getMovable();
 		if(movableChild) {
 			glm::vec2 stepSize = movableChild->getSpeed() * deltaTime;
-			movableChild->move(stepSize, minboundary, maxboundary);
+			movableChild->move(stepSize, minboundary - 1.0f, maxboundary + 1.0f); // Allow some margin for movement
+			if (dieinborder) {
+				if (!movableChild->collision(minboundary, maxboundary)) {
+					delete child;
+					*it = children.back();
+					children.pop_back();
+					it--;
+				}
+			}
 		}
 	}
 }
