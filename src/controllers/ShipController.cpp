@@ -84,24 +84,24 @@ void ShipController::FPressed() {
 
 void ShipController::GPressed() {
 	if (selectedship) {
-		for (int i = 0; i < 10000; ++i) {
-			const float bulletDrawAngle = selectedship->getAngle();
-			const float bulletSpeedAngle = bulletDrawAngle + 90.0f;
+		const float bulletDrawAngle = selectedship->getAngle();
+		const float bulletSpeedAngle = bulletDrawAngle + 90.0f;
 
-			const glm::vec2 direction = glm::rotate(glm::vec2(1.0f, 0.0f), glm::radians(bulletSpeedAngle));
+		const glm::vec2 direction = glm::rotate(glm::vec2(1.0f, 0.0f), glm::radians(bulletSpeedAngle));
 
-			const glm::vec2 shipSize = selectedship->getSize();
-			const float shipRadius = glm::length(shipSize) * 0.5f;
+		const glm::vec2 shipSize = selectedship->getSize();
+		const float shipRadius = glm::length(shipSize) * 0.5f;
 
-			const glm::vec2 bulletSpeed = direction * 100.0f;
-			const glm::vec2 bulletFrameSize = glm::vec2(bulletframe.getWidth(), bulletframe.getHeight());
+		const glm::vec2 bulletSpeed = direction * 100.0f;
+		const glm::vec2 bulletFrameSize = glm::vec2(bulletframe.getWidth(), bulletframe.getHeight());
 
-			glm::vec2 spawnPos = selectedship->getMidPosition() + direction * shipRadius - bulletFrameSize * 0.5f;
-			spawnPos += glm::gaussRand(glm::vec2(0.0f), glm::vec2(10.0f)); // Add some random offset
+		glm::vec2 spawnPos = selectedship->getMidPosition() + direction * shipRadius - bulletFrameSize * 0.5f;
 
-			const glm::vec2 bulletSize = bulletFrameSize;
+		const glm::vec2 bulletSize = bulletFrameSize;
 
-			auto* newBullet = new Object2D<Type2D::NODE, Pos2D::MOVING, Tex2D::IMAGE>(&bulletframe, spawnPos, bulletSpeed, bulletDrawAngle, bulletSize);
+		for (int i = 0; i < 10; ++i) {
+			const glm::vec2 newSpawnPos = spawnPos + glm::gaussRand(glm::vec2(0.0f), glm::vec2(10.0f));
+			auto* newBullet = new Object2D<Type2D::NODE, Pos2D::MOVING, Tex2D::IMAGE>(&bulletframe, newSpawnPos, bulletSpeed, bulletDrawAngle, bulletSize);
 			bullets->push_back(newBullet);
 		}
 	} else {
@@ -111,7 +111,6 @@ void ShipController::GPressed() {
 
 void ShipController::mouseLeftRelease(const glm::vec2& clickedPos) {
 	if (selectedship) {
-		speed = selectedship->getSpeed();
 		selectedship->setSpeed(glm::vec2(0.0f, 0.0f));
 	}
 	selectedship = nullptr;
@@ -122,8 +121,7 @@ void ShipController::mouseLeftRelease(const glm::vec2& clickedPos) {
 		gLogi("ShipController::mouseLeftRelease")
 			<< "Selected movable ship with id " << selectedship->getId()
 			<< " at position: " << clickedPos.x << ", " << clickedPos.y;
-		speedptr = selectedship->getSpeedAddress();
-		*speedptr = speed;
+		selectedship->setSpeed(speed);
 		return;
 	}
 	// If not found, check template (FIXED) ships
@@ -135,8 +133,7 @@ void ShipController::mouseLeftRelease(const glm::vec2& clickedPos) {
 		gLogi("ShipController::mouseLeftRelease")
 			<< "Selected fixed ship with id " << selectedship->getId()
 			<< " at position: " << clickedPos.x << ", " << clickedPos.y;
-		speedptr = selectedship->getSpeedAddress();
-		*speedptr = speed;
+		selectedship->setSpeed(speed);
 	}
 }
 

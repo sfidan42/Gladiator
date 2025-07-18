@@ -63,7 +63,6 @@ public:
 	virtual void draw() = 0;
 	virtual void setSpeed(const glm::vec2& speed) = 0;
 	virtual glm::vec2 getSpeed() const = 0;
-	virtual glm::vec2* getSpeedAddress() = 0;
 
 	Object2D<Type2D::NODE, Pos2D::MOVING, TX>* getMovable();
 	Object2D<Type2D::NODE, P, Tex2D::SPRITE>* getAnimated();
@@ -111,7 +110,6 @@ public:
 	int getId() const { return id; }
 	void setSpeed(const glm::vec2& speed) { this->speed = speed; }
 	glm::vec2 getSpeed() const { return speed; }
-	glm::vec2* getSpeedAddress() { return &speed; }
 
 	template <Pos2D p = P, std::enable_if_t<p == Pos2D::MOVING, int>  = 0>
 	void move(const glm::vec2& stepSize, const glm::vec2& minBoundary, const glm::vec2& maxBoundary);

@@ -19,16 +19,16 @@ class ShipController {
 public:
 	ShipController();
 	~ShipController();
-	void WPressed() { speedptr->y -= 1000.0f; }
-	void APressed() { speedptr->x -= 1000.0f; }
-	void SPressed() { speedptr->y += 1000.0f; }
-	void DPressed() { speedptr->x += 1000.0f; }
+	void WPressed() { speed.y -= 1000.0f; if(selectedship) selectedship->setSpeed(speed); }
+	void APressed() { speed.x -= 1000.0f; if(selectedship) selectedship->setSpeed(speed); }
+	void SPressed() { speed.y += 1000.0f; if(selectedship) selectedship->setSpeed(speed); }
+	void DPressed() { speed.x += 1000.0f; if(selectedship) selectedship->setSpeed(speed); }
 	void FPressed();
 	void GPressed();
-	void WReleased() { speedptr->y += 1000.0f; }
-	void AReleased() { speedptr->x += 1000.0f; }
-	void SReleased() { speedptr->y -= 1000.0f; }
-	void DReleased() { speedptr->x -= 1000.0f; }
+	void WReleased() { speed.y += 1000.0f; if(selectedship) selectedship->setSpeed(speed); }
+	void AReleased() { speed.x += 1000.0f; if(selectedship) selectedship->setSpeed(speed); }
+	void SReleased() { speed.y -= 1000.0f; if(selectedship) selectedship->setSpeed(speed); }
+	void DReleased() { speed.x -= 1000.0f; if(selectedship) selectedship->setSpeed(speed); }
 	void mouseLeftRelease(const glm::vec2& clickedPos);
 	void mouseRightRelease(const glm::vec2& clickedPos);
 
@@ -48,7 +48,6 @@ public:
 
 private:
 	glm::vec2 speed = glm::vec2(0.0f);
-	glm::vec2* speedptr = &speed;
 
 	Object2D<Type2D::VECTOR, Pos2D::FIXED, Tex2D::SPRITE>* fixedships = nullptr;
 	Object2D<Type2D::VECTOR, Pos2D::MOVING, Tex2D::SPRITE>* movableships = nullptr;
