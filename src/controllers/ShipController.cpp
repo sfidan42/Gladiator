@@ -68,7 +68,9 @@ void ShipController::FPressed() {
 		const glm::vec2 shipSize = selectedship->getSize();
 		const float shipRadius = glm::length(shipSize) * 0.5f;
 
-		const glm::vec2 bulletSpeed = direction * 1000.0f;
+		const glm::vec2 shipSpeed = selectedship->getSpeed();
+		const glm::vec2 normShipSpeed = glm::length(shipSpeed) <= 0.01f ? glm::vec2(0.0f) : glm::normalize(shipSpeed);
+		const glm::vec2 bulletSpeed = direction * 1000.0f + normShipSpeed * 333.333f;
 		const glm::vec2 bulletFrameSize = glm::vec2(bulletframe.getWidth(), bulletframe.getHeight());
 
 		const glm::vec2 spawnPos = selectedship->getMidPosition() + direction * shipRadius - bulletFrameSize * 0.5f;
@@ -92,7 +94,9 @@ void ShipController::GPressed() {
 		const glm::vec2 shipSize = selectedship->getSize();
 		const float shipRadius = glm::length(shipSize) * 0.5f;
 
-		const glm::vec2 bulletSpeed = direction * 100.0f;
+		const glm::vec2 shipSpeed = selectedship->getSpeed();
+		const glm::vec2 normShipSpeed = glm::length(shipSpeed) <= 0.01f ? glm::vec2(0.0f) : glm::normalize(shipSpeed);
+		const glm::vec2 bulletSpeed = direction * 100.0f + normShipSpeed * 33.333f;
 		const glm::vec2 bulletFrameSize = glm::vec2(bulletframe.getWidth(), bulletframe.getHeight());
 
 		glm::vec2 spawnPos = selectedship->getMidPosition() + direction * shipRadius - bulletFrameSize * 0.5f;
