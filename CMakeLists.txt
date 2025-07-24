@@ -4,13 +4,11 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 ########## PROJECT NAME ##########
-set(APP_NAME GlistApp)
+set(APP_NAME Gladiator)
 
 
 ########## USED PLUGINS LIST ##########
-set(PLUGINS
-	gipObject2DPlugin
-)
+set(PLUGINS)
 
 
 ##################################################
@@ -109,9 +107,6 @@ set(GlistApp_SOURCES
 		${APP_DIR}/src/main.cpp
 		${APP_DIR}/src/gApp.cpp
 		${APP_DIR}/src/gCanvas.cpp
-		${APP_DIR}/src/controllers/ShipController.cpp
-		${APP_DIR}/src/controllers/PlatformController.cpp
-		${APP_DIR}/src/controllers/GameController.cpp
 )
 
 add_executable(${APP_NAME}

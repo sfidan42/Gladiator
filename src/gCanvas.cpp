@@ -1,83 +1,40 @@
 /*
-* gCanvas.cpp
-*
-*  Created on: May 6, 2020
-*      Author: noyan
-*/
-
+ * gCanvas.cpp
+ *
+ *  Created on: May 6, 2020
+ *      Author: noyan
+ */
 
 #include "gCanvas.h"
 
 gCanvas::gCanvas(gApp* root) : gBaseCanvas(root) {
 	this->root = root;
-	gamecontroller = new GameController();
 	font = new gFont();
 }
 
-gCanvas::~gCanvas() {
-	delete gamecontroller;
-	delete font;
-}
+gCanvas::~gCanvas() { delete font; }
 
 void gCanvas::setup() {
-	std::string backgroundImg = "map.png";
-	if(!background.loadImage(backgroundImg)) {
-		gLoge("gCanvas::setup") << "Failed to load background image.";
-	}
-	else {
-		gLogi("gCanvas::setup") << "Background image loaded from " << backgroundImg;
-	}
-	glm::vec2 windowSize = {
-		renderer->getUnitWidth(),
-		renderer->getUnitHeight()
-	};
 	appmanager->setTargetFramerate(165);
 	appmanager->enableVsync();
-	gamecontroller->setup(glm::vec2(0.0f), windowSize);
 	font->loadFont("FreeSansBold.ttf", 16);
 }
 
 void gCanvas::update() {
 	const float deltaTime = appmanager->getElapsedTime();
-	gamecontroller->update(deltaTime);
+	(void)deltaTime;
 }
 
 void gCanvas::draw() {
-	background.draw(0, 0);
-	gamecontroller->draw();
 	font->drawText("fps: " + gToStr(1.0f / appmanager->getElapsedTime()), 0.0f, 16.0f);
 }
 
 void gCanvas::keyPressed(int key) {
-	switch(key) {
-	case G_KEY_W: gamecontroller->WPressed();
-		break;
-	case G_KEY_A: gamecontroller->APressed();
-		break;
-	case G_KEY_S: gamecontroller->SPressed();
-		break;
-	case G_KEY_D: gamecontroller->DPressed();
-		break;
-	case G_KEY_F: gamecontroller->FPressed();
-		break;
-	case G_KEY_G: gamecontroller->GPressed();
-		break;
-	default: break;
-	}
+	//	gLogi("gCanvas::keyPressed") << "keyPressed:" << gKeyToStr(key);
 }
 
 void gCanvas::keyReleased(int key) {
-	switch(key) {
-	case G_KEY_W: gamecontroller->WReleased();
-		break;
-	case G_KEY_A: gamecontroller->AReleased();
-		break;
-	case G_KEY_S: gamecontroller->SReleased();
-		break;
-	case G_KEY_D: gamecontroller->DReleased();
-		break;
-	default: break;
-	}
+	//	gLogi("gCanvas::keyReleased") << "keyReleased:" << gKeyToStr(key);
 }
 
 void gCanvas::charPressed(unsigned int codepoint) {
@@ -97,16 +54,7 @@ void gCanvas::mousePressed(int x, int y, int button) {
 }
 
 void gCanvas::mouseReleased(int x, int y, int button) {
-	switch(button) {
-	case GLFW_MOUSE_BUTTON_LEFT:
-		gamecontroller->mouseLeftRelease(glm::vec2(x, y));
-		break;
-	case GLFW_MOUSE_BUTTON_RIGHT:
-		gamecontroller->mouseRightRelease(glm::vec2(x, y));
-		break;
-	default:
-		break;
-	}
+	//	gLogi("gCanvas") << "mouseReleased" << ", x:" << x << ", y:" << y << ", button:" << button;
 }
 
 void gCanvas::mouseScrolled(int x, int y) {

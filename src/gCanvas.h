@@ -8,12 +8,11 @@
 #ifndef GCANVAS_H_
 #define GCANVAS_H_
 
-#include "gBaseCanvas.h"
 #include "gApp.h"
-#include "gImage.h"
+#include "gBaseCanvas.h"
 #include "gGUITextbox.h"
+#include "gImage.h"
 #include <GLFW/glfw3.h>
-#include "controllers/GameController.h"
 
 class gCanvas : public gBaseCanvas {
 public:
@@ -41,9 +40,6 @@ public:
 
 private:
 	gApp* root;
-	gImage background;
-	GameController *gamecontroller;
-
 	gFont* font;
 };
 
