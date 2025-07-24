@@ -8,7 +8,9 @@ set(APP_NAME GlistApp)
 
 
 ########## USED PLUGINS LIST ##########
-set(PLUGINS)
+set(PLUGINS
+	gipObject2DPlugin
+)
 
 
 ##################################################
@@ -107,10 +109,7 @@ set(GlistApp_SOURCES
 		${APP_DIR}/src/main.cpp
 		${APP_DIR}/src/gApp.cpp
 		${APP_DIR}/src/gCanvas.cpp
-		${APP_DIR}/src/animation/SpriteAnimator.cpp
-		${APP_DIR}/src/animation/SpriteAnimation.cpp
 		${APP_DIR}/src/controllers/ShipController.cpp
-		${APP_DIR}/src/datatypes/AnimatedFrames.cpp
 		${APP_DIR}/src/controllers/PlatformController.cpp
 		${APP_DIR}/src/controllers/GameController.cpp
 )

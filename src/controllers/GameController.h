@@ -24,8 +24,6 @@ public:
 	void mouseLeftRelease(const glm::vec2& clickedPos);
 	void mouseRightRelease(const glm::vec2& clickedPos);
 
-	std::string getLogMessages() const { return shipcontroller->getLogMessages(); }
-
 	void setup(const glm::vec2& minBoundary, const glm::vec2& maxBoundary) { shipcontroller->setup(minBoundary, maxBoundary); }
 	void update(float deltaTime) { shipcontroller->update(deltaTime); }
 	void draw() { playerplatformctrl->draw(); enemyplatformctrl->draw(); shipcontroller->draw(); }

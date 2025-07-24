@@ -11,6 +11,7 @@
 #include <glm/gtc/random.hpp>
 #include "gImage.h"
 #include "gFile.h"
+#include "gFont.h"
 #include "animation/SpriteAnimator.h"
 #include "datatypes/Object2D.h"
 
@@ -32,12 +33,6 @@ public:
 	void mouseLeftRelease(const glm::vec2& clickedPos);
 	void mouseRightRelease(const glm::vec2& clickedPos);
 
-	std::string getLogMessages() const {
-		return "number of bullets: " + gToStr(bullets->size()) +
-		       ", number of fixed ships: " + gToStr(fixedships->size()) +
-		       ", number of moving ships: " + gToStr(movableships->size());
-	}
-
 	void setup(const glm::vec2& minBoundary, const glm::vec2& maxBoundary);
 	void update(float deltaTime);
 	void draw() const;
@@ -57,6 +52,8 @@ private:
 	gImage bulletframe;
 
 	SpriteAnimator *animator = nullptr;
+
+	gFont* font;
 };
 
 #endif /* SRC_CONTROLLERS_SHIPCONTROLLER_H_ */

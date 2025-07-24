@@ -7,10 +7,12 @@
 
 #include "controllers/ShipController.h"
 
+#include "gAppManager.h"
+
 ShipController::ShipController() {
 	fixedships = new Object2D<Type2D::VECTOR, Pos2D::FIXED, Tex2D::SPRITE>;
 	for(int i = 1; i <= 4; ++i) {
-		auto* texture = new AnimatedFrames();
+		auto* texture = new AnimationFrames();
 		for(int j = 1; ; ++j) {
 			std::string path = "gemiler/ship_" + gToStr(i) + "/ship_" + gToStr(i) + "_" + gToStr(j) + ".png";
 			auto* img = new gImage();
@@ -34,7 +36,7 @@ ShipController::ShipController() {
 	if(!bulletframe.loadImage(bulletPath)) {
 		gLoge("ShipController::ShipController") << "Failed to load bullet frame from: " << bulletPath;
 	}
-	auto *animatedFrames = new AnimatedFrames();
+	auto *animatedFrames = new AnimationFrames();
 	const std::string& baseDir = gObject::gGetImagesDir();
 	for(int i = 1; ; i++) {
 		std::string path = "platform_anim/platform_" + gToStr(i) + ".png";
@@ -49,6 +51,7 @@ ShipController::ShipController() {
 	auto* selectionAnim = new SpriteAnimation(animatedFrames, 25);
 	animator->addAnimation(selectionAnim);
 	animator->changeAnimation(selectionAnim->getId());
+	font = new gFont();
 }
 
 ShipController::~ShipController() {
@@ -56,6 +59,7 @@ ShipController::~ShipController() {
 	delete movableships;
 	delete animator;
 	delete bullets;
+	delete font;
 }
 
 void ShipController::FPressed() {
@@ -158,6 +162,7 @@ void ShipController::mouseRightRelease(const glm::vec2& clickedPos) {
 void ShipController::setup(const glm::vec2& minBoundary, const glm::vec2& maxBoundary) {
 	movableships->setup(minBoundary, maxBoundary); // Ships don't die in border, dieInBorder is left false
 	bullets->setup(minBoundary, maxBoundary, true); // Bullets die in border
+	font->loadFont("TESLA.ttf", 16);
 }
 
 void ShipController::update(float deltaTime) {
@@ -180,4 +185,8 @@ void ShipController::draw() const {
 	bullets->draw();
 	fixedships->draw();
 	movableships->draw();
+	std::string shipsinfo = "# of fixed ships: " + gToStr(fixedships->size()) +
+		"\n# pf moving ships: " + gToStr(movableships->size()) +
+		"\n# of bullets: " + gToStr(bullets->size());
+	font->drawText(shipsinfo, 900.0f, 516.0f);
 }

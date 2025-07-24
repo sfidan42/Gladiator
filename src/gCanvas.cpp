@@ -11,17 +11,20 @@
 gCanvas::gCanvas(gApp* root) : gBaseCanvas(root) {
 	this->root = root;
 	gamecontroller = new GameController();
+	font = new gFont();
 }
 
 gCanvas::~gCanvas() {
 	delete gamecontroller;
+	delete font;
 }
 
 void gCanvas::setup() {
 	std::string backgroundImg = "map.png";
-	if (!background.loadImage(backgroundImg)) {
+	if(!background.loadImage(backgroundImg)) {
 		gLoge("gCanvas::setup") << "Failed to load background image.";
-	} else {
+	}
+	else {
 		gLogi("gCanvas::setup") << "Background image loaded from " << backgroundImg;
 	}
 	glm::vec2 windowSize = {
@@ -31,20 +34,18 @@ void gCanvas::setup() {
 	appmanager->setTargetFramerate(165);
 	appmanager->enableVsync();
 	gamecontroller->setup(glm::vec2(0.0f), windowSize);
-	textbox.set(root, nullptr, nullptr,
-		0, 0, 1000, 0, 800, 0);
+	font->loadFont("FreeSansBold.ttf", 16);
 }
 
 void gCanvas::update() {
 	const float deltaTime = appmanager->getElapsedTime();
 	gamecontroller->update(deltaTime);
-	textbox.setText(gamecontroller->getLogMessages() + ", fps: " + gToStr(1.0f / deltaTime));
 }
 
 void gCanvas::draw() {
 	background.draw(0, 0);
 	gamecontroller->draw();
-	textbox.draw();
+	font->drawText("fps: " + gToStr(1.0f / appmanager->getElapsedTime()), 0.0f, 16.0f);
 }
 
 void gCanvas::keyPressed(int key) {

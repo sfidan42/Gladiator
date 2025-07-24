@@ -43,7 +43,8 @@ private:
 	gApp* root;
 	gImage background;
 	GameController *gamecontroller;
-	gGUITextbox textbox;
+
+	gFont* font;
 };
 
 #endif /* GCANVAS_H_ */
